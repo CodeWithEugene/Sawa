@@ -7,10 +7,16 @@ import { cn } from "@/lib/utils"
 export function SawaMark({
   className,
   size = 32,
+  tone = "light",
 }: {
   className?: string
   size?: number
+  tone?: "light" | "dark" | "orange"
 }) {
+  // keep the mark legible on any background
+  const left = tone === "orange" ? "#ffffff" : "var(--nairobi)"
+  const right = "var(--harlem)"
+  const centre = tone === "light" ? "var(--ink)" : "#ffffff"
   return (
     <svg
       viewBox="0 0 48 32"
@@ -30,7 +36,7 @@ export function SawaMark({
         cy="16"
         r="12.5"
         fill="none"
-        stroke="var(--nairobi)"
+        stroke={left}
         strokeWidth="3.4"
       />
       <circle
@@ -38,14 +44,14 @@ export function SawaMark({
         cy="16"
         r="12.5"
         fill="none"
-        stroke="var(--harlem)"
+        stroke={right}
         strokeWidth="3.4"
       />
       <circle
         cx="31"
         cy="16"
         r="10.8"
-        fill="var(--ink)"
+        fill={centre}
         clipPath="url(#sawa-left)"
       />
     </svg>

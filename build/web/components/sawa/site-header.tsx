@@ -26,7 +26,7 @@ export function SiteHeader({
         className
       )}
     >
-      <div className="mx-auto flex h-[72px] w-full items-center gap-8 px-6 md:px-10 lg:px-16 2xl:px-24">
+      <div className="mx-auto flex h-14 w-full items-center gap-8 px-6 md:px-10 lg:px-16 2xl:px-24">
         <Link
           href="/"
           className="rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
@@ -65,7 +65,7 @@ export function SiteHeader({
 
 export function SiteFooter() {
   return (
-    <footer className="bg-ink text-white/60">
+    <footer data-nav="dark" className="bg-ink text-white/60">
       <div className="flex w-full flex-col gap-4 px-6 py-10 text-sm md:flex-row md:items-center md:justify-between md:px-10 lg:px-16 2xl:px-24">
         <p>
           Built on SingularityNET Omega. All people, songs and files in the demo

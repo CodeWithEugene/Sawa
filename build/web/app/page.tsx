@@ -14,7 +14,8 @@ import {
 } from "lucide-react"
 
 import { HalftoneDunes } from "@/components/sawa/halftone-dunes"
-import { SiteFooter, SiteHeader } from "@/components/sawa/site-header"
+import { LandingNav } from "@/components/sawa/landing-nav"
+import { SiteFooter } from "@/components/sawa/site-header"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -99,17 +100,13 @@ function Rings({ className }: { className?: string }) {
 export default function Home() {
   return (
     <>
-      <SiteHeader nav>
-        <Link
-          href={DEMO}
-          className="text-[1.05rem] text-foreground/85 transition-colors hover:text-foreground"
-        >
-          Try The Demo
-        </Link>
-      </SiteHeader>
+      <LandingNav demoHref={DEMO} />
       <main>
         {/* hero: one screen, like a poster */}
-        <section className="relative flex min-h-[calc(100svh-72px)] flex-col overflow-hidden">
+        <section
+          data-nav="light"
+          className="relative flex min-h-[calc(100svh-56px)] flex-col overflow-hidden"
+        >
           <div className="relative z-10 grid w-full items-center gap-10 px-6 pt-10 md:px-10 md:pt-16 lg:grid-cols-[1fr_auto] lg:px-16 2xl:px-24">
             <div>
               <h1 className="animate-rise text-[clamp(2.9rem,6.3vw,6.6rem)] leading-[1.02] font-medium tracking-[-0.045em] text-[#3a3a3c]">
@@ -143,6 +140,11 @@ export default function Home() {
           {/* landscape: hills fill the rest of the screen, features sit in the black */}
           <div className="relative mt-10 min-h-[480px] flex-1">
             <HalftoneDunes className="absolute inset-0" />
+            <div
+              data-nav="dark"
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[50%]"
+            />
             <div className="absolute inset-x-0 bottom-[9%] grid gap-x-8 gap-y-10 px-6 sm:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-24 2xl:px-32">
               {FEATURES.map(({ icon: Icon, title, body }) => (
                 <div key={title} className="flex gap-5">
@@ -164,7 +166,8 @@ export default function Home() {
         {/* the problem */}
         <section
           id="artists"
-          className="w-full scroll-mt-20 bg-nairobi px-6 py-24 text-white md:px-10 md:py-32 lg:px-16 2xl:px-24"
+          data-nav="orange"
+          className="w-full scroll-mt-14 bg-nairobi px-6 py-24 text-white md:px-10 md:py-32 lg:px-16 2xl:px-24"
         >
           <div className="grid gap-14 lg:grid-cols-[1.1fr_1fr] lg:items-end">
             <div>
@@ -209,7 +212,11 @@ export default function Home() {
         </section>
 
         {/* how it works */}
-        <section id="how" className="scroll-mt-20 bg-ink text-white">
+        <section
+          id="how"
+          data-nav="dark"
+          className="scroll-mt-14 bg-ink text-white"
+        >
           <div className="w-full px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
@@ -249,7 +256,8 @@ export default function Home() {
         {/* AI music */}
         <section
           id="ai"
-          className="w-full scroll-mt-20 bg-nairobi px-6 py-24 text-white md:px-10 md:py-32 lg:px-16 2xl:px-24"
+          data-nav="orange"
+          className="w-full scroll-mt-14 bg-nairobi px-6 py-24 text-white md:px-10 md:py-32 lg:px-16 2xl:px-24"
         >
           <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
             <div>
@@ -310,7 +318,11 @@ export default function Home() {
         </section>
 
         {/* technology */}
-        <section id="omega" className="scroll-mt-20 bg-ink text-white">
+        <section
+          id="omega"
+          data-nav="dark"
+          className="scroll-mt-14 bg-ink text-white"
+        >
           <div className="grid w-full gap-14 px-6 py-24 md:px-10 md:py-32 lg:grid-cols-[1.1fr_1fr] lg:px-16 2xl:px-24">
             <div>
               <p className="text-[0.78rem] font-medium text-nairobi">
@@ -365,7 +377,10 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section className="w-full bg-nairobi px-6 py-24 md:px-10 md:py-28 lg:px-16 2xl:px-24">
+        <section
+          data-nav="orange"
+          className="w-full bg-nairobi px-6 py-24 md:px-10 md:py-28 lg:px-16 2xl:px-24"
+        >
           <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-16 text-center text-white md:px-16 md:py-24">
             <svg
               viewBox="0 0 480 300"
