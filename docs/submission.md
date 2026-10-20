@@ -1,6 +1,6 @@
 # Submission: Paste-Ready Fields For BASIX.MARKET
 
-> Copy each block into the entry form at https://www.basix.market/lms/hackathon/2/submission. Plan: save the entry by 17:30 EAT with everything except the video link, then add the video before 23:59 EAT.
+> Copy each block into the entry form at https://www.basix.market/lms/hackathon/2/submission. Submitted on 20 October 2026.
 
 ---
 
@@ -10,7 +10,7 @@ Sawa
 
 ## Tagline
 
-Make it together. Split it fairly. Two Omega agents settle who wrote what in a co-written song, prove they agree, and get the split sheet signed in the session.
+Two Omega agents settle who wrote what in a co-written song, prove they agree, and get the split signed.
 
 ## Track
 
@@ -34,7 +34,8 @@ Technetians: Eugene Mutembei (Independent / solo)
 - Guided demo: https://sawa.codewitheugene.top/session/amani-ni-sisi
 - API docs: https://sawa.codewitheugene.top/developers
 - GitHub: https://github.com/CodeWithEugene/Sawa
-- Video: *(add when uploaded)*
+- Video: uploaded to the entry form (Sawa-Demo-Final.mp4, 2:50)
+- Slides: docs/Sawa Pitch Deck.pdf
 
 ## Description
 

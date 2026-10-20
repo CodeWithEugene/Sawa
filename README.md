@@ -14,7 +14,8 @@ Sawa helps co-writers settle who wrote what, fairly and on the record, so the mu
 | **Challenge** | **Two Agents, One Truth**: "two agents disagree about a fact and reason to a shared answer" |
 | **Art brief** | AI for Peace: "two communities' accounts of one event, mediated to one story" (here: a Harlem producer's and a Nairobi songwriter's accounts of one co-write). Partner briefs are proposals until partners confirm them |
 | **Team** | Technetians: Eugene Mutembei (solo) |
-| **Video** | *(link added at submission)* |
+| **Video** | 2:50 demo, narrated in the builder's cloned voice, uploaded with the BASIX entry |
+| **Slides** | [docs/Sawa Pitch Deck.pdf](docs/Sawa%20Pitch%20Deck.pdf) |
 | **Data** | 100% synthetic. No partner catalogue, recording or real person is used |
 
 ---
