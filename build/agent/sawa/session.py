@@ -24,11 +24,21 @@ def _draft(agent: str, song_id: str, pack: str) -> str:
 
 
 @lru_cache(maxsize=256)
-def _reconcile(agent: str, song_id: str, pack: str, contests_key: str) -> str:
+def _reconcile_core(agent: str, song_id: str, pack: str, withdrawn_key: str) -> str:
+    """The expensive part: depends only on which records were withdrawn."""
     s = get_song(song_id)
-    contests = tuple(json.loads(contests_key))
+    contests = tuple(dict(record=r, by="", reason="") for r in json.loads(withdrawn_key))
     records = memory.visible_records(s, agent, exchanged=True)
     return json.dumps(reconcile.reconcile(s, records, pack, contests))
+
+
+def _reconcile(agent: str, song_id: str, pack: str, contests: list[dict]) -> dict:
+    """Attach who contested and why, then hash the full proof."""
+    withdrawn_key = json.dumps(sorted({c["record"] for c in contests}))
+    res = json.loads(_reconcile_core(agent, song_id, pack, withdrawn_key))
+    res["body"]["contests"] = [dict(record=c["record"], by=c["by"], reason=c["reason"]) for c in contests]
+    res["hash"] = reconcile.proof_hash(res["body"])
+    return res
 
 
 def _disputed(drafts: dict[str, dict]) -> list[dict]:
@@ -98,8 +108,7 @@ def run(song_id: str, events: list[dict]) -> dict:
     s = get_song(song_id)
     st = memory.session_state(events)
     packs = {a: st.packs.get(a, "split-v1") for a in AGENTS}
-    contests_key = json.dumps([dict(record=c["record"], by=c["by"], reason=c["reason"])
-                               for c in sorted(st.contests, key=lambda c: c["record"])])
+    contests = sorted(st.contests, key=lambda c: c["record"])
     phase = "reconciled" if st.reconciled else ("exchanged" if st.exchanged else "solo")
     records = {r["id"]: r for r in s["records"]}
 
@@ -111,7 +120,7 @@ def run(song_id: str, events: list[dict]) -> dict:
                     holds=len(memory.visible_records(s, a, st.exchanged)),
                     memory=_memory_log(s, a, events))
         if st.reconciled:
-            res = json.loads(_reconcile(a, song_id, packs[a], contests_key))
+            res = _reconcile(a, song_id, packs[a], contests)
             view["result"] = res
             view["hash"] = res["hash"]
         else:

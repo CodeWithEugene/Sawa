@@ -1,11 +1,25 @@
 import type { JevReading, SessionEvent, SessionState, Song } from "./types"
 
-async function call<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
-    ...init,
-    headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
-    cache: "no-store",
-  })
+async function call<T>(
+  path: string,
+  init?: RequestInit,
+  retries = 1
+): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(path, {
+      ...init,
+      headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+      cache: "no-store",
+    })
+  } catch (e) {
+    // a dropped connection on a slow network: try once more
+    if (retries > 0) {
+      await new Promise((r) => setTimeout(r, 800))
+      return call<T>(path, init, retries - 1)
+    }
+    throw e
+  }
   if (!res.ok) {
     const text = await res.text().catch(() => "")
     throw new Error(`Request failed (${res.status}) ${text.slice(0, 160)}`)

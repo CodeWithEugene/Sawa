@@ -142,8 +142,17 @@ export function SessionProvider({
       writeStored(LANG_KEY, l)
     },
     exchange: () => run([...events, { type: "exchange" }], "exchange", 900),
-    reconcile: () =>
-      run([...events, { type: "reconcile" }], "reconcile", MIN_REASONING_MS),
+    reconcile: async () => {
+      const next: SessionEvent[] = [...events, { type: "reconcile" }]
+      await run(next, "reconcile", MIN_REASONING_MS)
+      // warm the most common challenge in the background (nothing is shown)
+      api
+        .run(songId, [
+          ...next,
+          { type: "contest", record: "msg-fire", by: "malik", reason: "warm" },
+        ])
+        .catch(() => undefined)
+    },
     contest: (record, by, reason) =>
       run(
         [...events, { type: "contest", record, by, reason }],

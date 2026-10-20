@@ -110,9 +110,9 @@ export default function Home() {
           <div className="relative z-10 grid w-full items-center gap-10 px-6 pt-10 md:px-10 md:pt-16 lg:grid-cols-[1fr_auto] lg:px-16 2xl:px-24">
             <div>
               <h1 className="animate-rise text-[clamp(2.9rem,6.3vw,6.6rem)] leading-[1.02] font-medium tracking-[-0.045em] text-[#3a3a3c]">
-                Two Memories.
+                Make It Together.
                 <br />
-                <span className="text-nairobi">One</span> Agreement.
+                <span className="text-nairobi">Split</span> It Fairly.
               </h1>
               <p className="animate-rise mt-6 max-w-[40rem] text-[1.2rem] leading-snug text-[#3a3a3c] [animation-delay:90ms]">
                 Sawa helps co-writers settle who wrote what, fairly and on the
