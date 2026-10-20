@@ -1,0 +1,22 @@
+[project]
+name = "sawa"
+version = "0.1.0"
+description = "Sawa: two Omega agents reason from conflicting memories of a co-write to one signed split sheet"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "hyperon==0.2.10",
+    "fastapi==0.142.2",
+    "uvicorn==0.54.0",
+    "pydantic==2.13.5",
+    "typesafe-sdk==0.7.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-cov>=5", "httpx>=0.28"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+
+[tool.coverage.run]
+source = ["sawa"]
