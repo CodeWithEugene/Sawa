@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# OS and tooling
+.DS_Store
+.claude-flow/
+.vercel/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.coverage
+
+# node
+node_modules/
+.next/
+test-results/
+playwright-report/
+*.tsbuildinfo
