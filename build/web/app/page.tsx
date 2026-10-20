@@ -212,12 +212,12 @@ export default function Home() {
         {/* how it works */}
         <section
           id="how"
-          className="scroll-mt-20 border-y border-border bg-card"
+          className="scroll-mt-20 bg-ink text-white"
         >
           <div className="w-full px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
-                <p className="eyebrow text-nairobi-ink">How it works</p>
+                <p className="text-[0.78rem] font-medium text-nairobi">How it works</p>
                 <h2 className="mt-4 max-w-2xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
                   From two stories to one signed split sheet.
                 </h2>
@@ -226,7 +226,7 @@ export default function Home() {
                 href={DEMO}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-12 rounded-xl px-6 text-base font-normal"
+                  "h-12 rounded-xl border-white/20 bg-transparent px-6 text-base font-normal text-white hover:bg-white/10 hover:text-white"
                 )}
               >
                 Walk Through The Demo <ArrowRight data-icon="inline-end" />
