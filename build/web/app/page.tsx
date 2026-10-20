@@ -3,12 +3,12 @@ import {
   ArrowRight,
   AudioWaveform,
   BadgeCheck,
-  FileCheck2,
+  Fingerprint,
   Handshake,
-  Languages,
+  MessagesSquare,
   MicVocal,
-  Scale,
   ShieldCheck,
+  Signature,
   SlidersHorizontal,
   Users,
 } from "lucide-react"
@@ -23,7 +23,7 @@ const DEMO = "/session/amani-ni-sisi"
 
 const FEATURES = [
   {
-    icon: Scale,
+    icon: Fingerprint,
     title: "Fair By Evidence",
     body: "Shares come from the files, messages and edits, not from who argues loudest.",
   },
@@ -33,12 +33,12 @@ const FEATURES = [
     body: "Each writer has their own agent. Nothing counts until both reach the same answer.",
   },
   {
-    icon: Languages,
+    icon: MessagesSquare,
     title: "Clear In Your Language",
     body: "Every share is explained in plain English or Swahili.",
   },
   {
-    icon: FileCheck2,
+    icon: Signature,
     title: "Ready To License",
     body: "Signed in the session, with any AI use disclosed.",
   },
@@ -148,9 +148,11 @@ export default function Home() {
             <div className="absolute inset-x-0 bottom-[9%] grid gap-x-8 gap-y-10 px-6 sm:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-24 2xl:px-32">
               {FEATURES.map(({ icon: Icon, title, body }) => (
                 <div key={title} className="flex gap-5">
-                  <span className="grid size-[50px] shrink-0 place-items-center rounded-[10px] border border-nairobi/60 text-white">
-                    <Icon className="size-[22px]" strokeWidth={1.7} />
-                  </span>
+                  <Icon
+                    className="mt-0.5 size-10 shrink-0 text-nairobi"
+                    strokeWidth={1.3}
+                    aria-hidden
+                  />
                   <div className="pt-0.5">
                     <p className="text-[1.15rem] text-white">{title}</p>
                     <p className="mt-1.5 max-w-[16rem] text-[0.95rem] leading-snug text-white/60">
