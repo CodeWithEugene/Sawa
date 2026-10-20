@@ -64,6 +64,9 @@ def ai_disclosure(s: dict) -> list[dict]:
         if r["kind"] == "ai-generation":
             out.append(dict(record=r["id"], tool=r["tool"], element=r["element"], used_by=r["author"],
                             use="generated", detail=r["prompt"]))
+        elif r["kind"] == "ai-assist":
+            out.append(dict(record=r["id"], tool=r["tool"], element=None, used_by=r["author"],
+                            use="assistive", detail=r["detail"]))
         elif r["kind"] == "ai-voice":
             consent = next((c["id"] for c in s["records"]
                             if c["kind"] == "consent" and c["author"] == r["voice_of"]), None)

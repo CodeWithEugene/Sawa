@@ -28,14 +28,20 @@ def _hash(label: str) -> str:
 
 ELEMENTS = [
     # id, weight, right, English label, Swahili label
-    ("hook-melody", 20, "composition", "Hook melody", "Melodia ya kiitikio"),
+    # The writers' "Jua" agreement (2025): the beat is half the song, the
+    # topline (melody and lyrics) the other half; melody and lyrics share the
+    # topline equally. This is the usual starting point in hip hop, Afrobeats
+    # and amapiano co-writes (see docs/research.md).
+    ("chords-bass", 30, "composition", "Chords and bass", "Kodi na besi"),
+    ("drum-groove", 20, "composition", "Drum groove", "Mdundo wa ngoma"),
+    ("hook-melody", 15, "composition", "Hook melody", "Melodia ya kiitikio"),
     ("verse-melody", 10, "composition", "Verse melody", "Melodia ya beti"),
-    ("chords-bass", 12, "composition", "Chords and bass", "Kodi na besi"),
-    ("drum-groove", 8, "composition", "Drum groove", "Mdundo wa ngoma"),
-    ("chorus-lyrics", 20, "composition", "Chorus lyrics", "Maneno ya kiitikio"),
-    ("verse1-lyrics", 15, "composition", "Verse 1 lyrics", "Maneno ya ubeti wa kwanza"),
-    ("verse2-lyrics", 15, "composition", "Verse 2 lyrics", "Maneno ya ubeti wa pili"),
+    ("chorus-lyrics", 10, "composition", "Chorus lyrics", "Maneno ya kiitikio"),
+    ("verse1-lyrics", 7.5, "composition", "Verse 1 lyrics", "Maneno ya ubeti wa kwanza"),
+    ("verse2-lyrics", 7.5, "composition", "Verse 2 lyrics", "Maneno ya ubeti wa pili"),
 ]
+
+BEAT = ("chords-bass", "drum-groove")
 
 WRITERS = {
     "wanjiru": {
@@ -116,9 +122,9 @@ RECORDS: list[dict] = [
     {
         "id": "edit-drums", "kind": "artefact", "author": "malik", "at": _t("2026-09-13T19:15:00"),
         "holders": ["harlem"], "element": "drum-groove",
-        "title": "Drum Edit", "file": "drums-edit.als", "detail": "Rearranged the generated groove and added his own fills",
+        "title": "Drum Edit", "file": "drums-edit.flp", "detail": "Rearranged the generated groove and added his own fills",
         "detail_sw": "Alipanga upya mdundo uliotengenezwa na kuongeza vipande vyake",
-        "hash": _hash("drums-edit.als"),
+        "hash": _hash("drums-edit.flp"),
     },
     {
         "id": "consent-voice", "kind": "consent", "author": "wanjiru", "at": _t("2026-09-14T17:30:00"),
@@ -174,6 +180,14 @@ RECORDS: list[dict] = [
         "translation": "Verse two is yours, Malik, it's fire.",
         "credits": [{"element": "verse2-lyrics", "role": "originated", "writer": "malik"}],
         "confirmed_by": "wanjiru",
+    },
+    {
+        "id": "ai-master", "kind": "ai-assist", "author": "malik", "at": _t("2026-09-20T22:00:00"),
+        "holders": ["harlem"], "title": "AI Mastering", "file": "amani-master-v2.wav",
+        "tool": "AI mastering service (synthetic)",
+        "detail": "Loudness and EQ on the final mix. Assistive only, no effect on who wrote what",
+        "detail_sw": "Sauti na EQ kwenye mchanganyiko wa mwisho. Msaada tu, haiathiri nani aliandika nini",
+        "hash": _hash("amani-master-v2.wav"),
     },
     {
         "id": "dispute", "kind": "dispute", "author": "malik", "at": _t("2026-09-29T10:00:00"),

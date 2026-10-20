@@ -27,47 +27,51 @@ uniform vec3 uPaper;
 uniform vec3 uInk;
 uniform vec3 uHot;
 
-const float CELL = 5.0;
-const float HOVER_R = 56.0;
+const float CELL = 4.0;
+const float HOVER_R = 52.0;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-float wave(float x, float amp, float freq, float ph, float i, float li) {
-  float f = freq / 1000.0 * 6.2831853;
-  float breathe = 1.0 + 0.18 * sin(uTime * 0.5 + i * 2.1 + ph + li);
-  return amp * breathe * sin(f * x + ph);
+// One wide valley: high at both edges, dipping where the rings stand.
+float valley(float u) {
+  return exp(-pow(u - 0.52, 2.0) / 0.035);
 }
 
-float ridge(float li, float x, float H) {
+float ridge(float li, float x, float W, float H) {
+  float u = x / W;
+  float v = valley(u);
+  float t = uTime;
+  // gentle breathing, quietest at the centre so the rings stay planted
+  float calm = 1.0 - v * 0.85;
   float y;
   if (li < 0.5) {
-    y = 0.30 + wave(x, 0.060, 1.1, 0.4, 0.0, li) + wave(x, 0.025, 2.9, 1.7, 1.0, li);
+    y = 0.035 + 0.2 * v + calm * 0.012 * sin(u * 9.0 + 0.6 + t * 0.55)
+      + calm * 0.006 * sin(u * 23.0 + 1.9 + t * 0.4);
   } else if (li < 1.5) {
-    y = 0.43 + wave(x, 0.050, 1.5, 2.0, 0.0, li) + wave(x, 0.028, 3.6, 0.3, 1.0, li);
-  } else if (li < 2.5) {
-    y = 0.57 + wave(x, 0.055, 0.9, 3.3, 0.0, li) + wave(x, 0.022, 3.1, 1.1, 1.0, li);
+    y = 0.21 + 0.12 * v + 0.016 * sin(u * 7.0 + 2.2 + t * 0.45)
+      + 0.008 * sin(u * 19.0 + 0.4 + t * 0.6);
   } else {
-    y = 0.74 + wave(x, 0.040, 1.2, 0.9, 0.0, li) + wave(x, 0.022, 4.2, 2.4, 1.0, li);
+    y = 0.36 + 0.05 * v + 0.018 * sin(u * 6.0 + 4.1 + t * 0.35)
+      + 0.008 * sin(u * 15.0 + 2.7 + t * 0.5);
   }
-  y += 0.006 * sin(uTime * 0.45 + li * 1.3);
   return y * H;
 }
 
-float darkness(vec2 p, float H) {
+float darkness(vec2 p, float W, float H) {
   float d = 0.0;
-  for (int l = 0; l < 4; l++) {
+  for (int l = 0; l < 3; l++) {
     float li = float(l);
-    float d0 = li < 0.5 ? 0.06 : li < 1.5 ? 0.16 : li < 2.5 ? 0.30 : 0.55;
-    float d1 = li < 0.5 ? 0.34 : li < 1.5 ? 0.55 : li < 2.5 ? 0.80 : 1.00;
-    float top = ridge(li, p.x, H);
-    float w = smoothstep(top - 5.0, top + 5.0, p.y);
-    float depth = pow(clamp((p.y - top) / (0.26 * H), 0.0, 1.0), 0.8);
+    float d0 = li < 0.5 ? 0.10 : li < 1.5 ? 0.38 : 0.70;
+    float d1 = li < 0.5 ? 0.45 : li < 1.5 ? 0.85 : 1.00;
+    float top = ridge(li, p.x, W, H);
+    float w = smoothstep(top - 4.0, top + 4.0, p.y);
+    float depth = pow(clamp((p.y - top) / (0.18 * H), 0.0, 1.0), 0.75);
     float v = mix(d0, d1, depth);
-    d = mix(d, max(d * 0.2, v), w);
+    d = mix(d, max(d * 0.3, v), w);
   }
-  float bottom = clamp((p.y / H - 0.86) / 0.14, 0.0, 1.0);
+  float bottom = clamp((p.y / H - 0.47) / 0.14, 0.0, 1.0);
   return max(d, bottom);
 }
 
@@ -82,7 +86,7 @@ void main() {
   float c = floor((p.x - stagger) / CELL + 0.5);
   vec2 center = vec2(c * CELL + stagger, r * CELL);
 
-  float d = darkness(center, H);
+  float d = darkness(center, res.x, H);
   d = clamp(d + (hash(vec2(c, r)) - 0.5) * 0.08, 0.0, 1.0);
 
   float heat = 0.0;
@@ -94,13 +98,14 @@ void main() {
     }
   }
 
-  float base = CELL * 0.5 * sqrt(max(d, 0.0));
-  float rad = base + (max(base, CELL * 0.4) - base) * heat;
+  // the darkest dots swell until they merge into solid black
+  float base = CELL * 0.5 * sqrt(max(d, 0.0)) * (1.0 + 0.55 * smoothstep(0.82, 1.0, d));
+  float rad = mix(base, max(min(base, CELL * 0.42), CELL * 0.4), heat);
   float aa = 0.75;
   float dotA = 1.0 - smoothstep(rad - aa, rad + aa, distance(p, center));
   if (rad < 0.12) dotA = 0.0;
 
-  float top0 = ridge(0.0, p.x, H);
+  float top0 = ridge(0.0, p.x, res.x, H);
   float bgA = smoothstep(top0 - 1.0, top0 + 1.0, p.y);
 
   vec3 dotC = mix(uInk, uHot, smoothstep(0.05, 0.9, heat));

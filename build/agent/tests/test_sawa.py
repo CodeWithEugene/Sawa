@@ -92,13 +92,13 @@ def test_d2_discounts_only_post_dispute_recollections(harlem: dict) -> None:
 # ---------------------------------------------------------------- shares
 
 def test_drafts_reproduce_each_writers_account() -> None:
-    assert reconcile.draft(S, "malik", "split-v1")["body"]["totals"] == {"wanjiru": 35.0, "malik": 65.0}
-    assert reconcile.draft(S, "wanjiru", "split-v1")["body"]["totals"] == {"wanjiru": 60.0, "malik": 40.0}
+    assert reconcile.draft(S, "malik", "split-v1")["body"]["totals"] == {"wanjiru": 22.5, "malik": 77.5}
+    assert reconcile.draft(S, "wanjiru", "split-v1")["body"]["totals"] == {"wanjiru": 40.0, "malik": 60.0}
 
 
 def test_reconciled_split_and_element_resolution(harlem: dict) -> None:
-    assert harlem["body"]["totals"] == {"wanjiru": 53.2, "malik": 46.8}
-    assert harlem["body"]["ai_points"] == 6.0
+    assert harlem["body"]["totals"] == {"wanjiru": 39.7, "malik": 60.3}
+    assert harlem["body"]["ai_points"] == 15.0
     hook = element(harlem, "hook-melody")
     assert hook["originators"] == ["wanjiru"] and hook["developers"] == ["malik"]
     assert hook["shares"] == {"wanjiru": 75.0, "malik": 25.0}
@@ -116,7 +116,7 @@ def test_shares_sum_to_100_per_human_element(harlem: dict) -> None:
 def test_ai_generated_drums_are_owned_by_no_one(harlem: dict) -> None:
     drums = element(harlem, "drum-groove")
     assert drums["ai_generated"] and drums["originators"] == [] and drums["developers"] == ["malik"]
-    assert drums["shares"] == {"wanjiru": 0.0, "malik": 25.0} and drums["ai_points"] == 6.0
+    assert drums["shares"] == {"wanjiru": 0.0, "malik": 25.0} and drums["ai_points"] == 15.0
     gen = statement(drums, "generated", "ai")
     assert gen["band"] == "settled" and gen["evidence"][0]["rule"] == "ai-generation"
     dev = statement(drums, "developed", "malik")
@@ -169,7 +169,7 @@ def test_contest_is_recorded_and_hook_still_holds() -> None:
     out = session.run(SONG, [*events(*FULL), contest])
     res = out["agents"]["harlem"]["result"]
     assert out["converged"] is True
-    assert res["body"]["totals"] == {"wanjiru": 53.2, "malik": 46.8}
+    assert res["body"]["totals"] == {"wanjiru": 39.7, "malik": 60.3}
     orig = statement(element(res, "hook-melody"), "originated", "wanjiru")
     assert orig["tv"] == [0.9261, 0.8334] and orig["band"] == "settled"
     assert any(w["record"] == "msg-fire" for w in res["body"]["withdrawn"])

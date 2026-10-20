@@ -99,71 +99,57 @@ function Rings({ className }: { className?: string }) {
 export default function Home() {
   return (
     <>
-      <SiteHeader nav>
-        <Link
-          href={DEMO}
-          className="text-[0.95rem] font-medium text-foreground/80 transition-colors hover:text-foreground"
-        >
-          Try The Demo
-        </Link>
-      </SiteHeader>
-
       <main>
-        {/* hero */}
-        <section className="relative overflow-hidden">
-          <div className="relative z-10 w-full px-6 pt-16 md:px-10 md:pt-24 lg:px-16 2xl:px-24">
-            <h1 className="animate-rise text-[clamp(3rem,7.2vw,6.4rem)] leading-[0.98] font-medium tracking-[-0.045em] text-foreground/85">
+        {/* hero: one screen, like a poster */}
+        <section className="relative flex min-h-svh flex-col overflow-hidden">
+          <SiteHeader nav className="static bg-transparent backdrop-blur-none">
+            <Link
+              href={DEMO}
+              className="text-[1.05rem] text-foreground/85 transition-colors hover:text-foreground"
+            >
+              Try The Demo
+            </Link>
+          </SiteHeader>
+
+          <div className="relative z-10 w-full px-6 pt-10 md:px-10 md:pt-16 lg:px-16 2xl:px-24">
+            <h1 className="animate-rise text-[clamp(2.9rem,6.3vw,6.6rem)] leading-[1.02] font-medium tracking-[-0.045em] text-[#3a3a3c]">
               Two Memories.
               <br />
               <span className="text-nairobi">One</span> Agreement.
             </h1>
-            <p className="animate-rise mt-7 max-w-[38rem] text-[1.2rem] leading-relaxed text-foreground/75 [animation-delay:90ms]">
-              Sawa helps co-writers settle who wrote what, fairly and on the
-              record, so the music they make together can be licensed and paid.
+            <p className="animate-rise mt-6 max-w-[40rem] text-[1.2rem] leading-snug text-[#3a3a3c] [animation-delay:90ms]">
+              Sawa helps co-writers settle who wrote what, fairly and on the record, so the music they make
+              together can be licensed and paid.
             </p>
-            <div className="animate-rise mt-9 flex flex-wrap gap-4 [animation-delay:170ms]">
+            <div className="animate-rise mt-9 flex flex-wrap gap-6 [animation-delay:170ms]">
               <Link
                 href={DEMO}
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "h-13 rounded-xl bg-nairobi px-7 text-[1.02rem] font-normal text-white shadow-sm hover:bg-nairobi/90"
-                )}
+                className="inline-flex h-[52px] items-center rounded-[10px] bg-nairobi px-11 text-[1.05rem] font-light text-white transition-colors hover:bg-nairobi/90"
               >
                 Try The Demo
               </Link>
               <a
                 href="#how"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-13 rounded-xl border-transparent bg-card px-7 text-[1.02rem] font-normal shadow-xs"
-                )}
+                className="inline-flex h-[52px] items-center rounded-[10px] bg-white/80 px-10 text-[1.05rem] text-foreground transition-colors hover:bg-white"
               >
                 See How It Works
               </a>
             </div>
           </div>
 
-          {/* landscape */}
-          <div className="relative -mt-4 h-[340px] md:-mt-10 md:h-[440px]">
-            <Rings className="absolute top-[6%] left-1/2 w-[300px] -translate-x-[6%] md:top-[-3%] md:w-[460px]" />
+          {/* landscape: hills fill the rest of the screen, features sit in the black */}
+          <div className="relative mt-10 min-h-[480px] flex-1">
             <HalftoneDunes className="absolute inset-0" />
-          </div>
-
-          {/* feature band */}
-          <div className="bg-ink">
-            <div className="grid w-full gap-10 px-6 pt-4 pb-20 sm:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-16 2xl:px-24">
+            <Rings className="pointer-events-none absolute top-[23.5%] left-[52%] w-[190px] -translate-x-1/2 -translate-y-[93%] md:w-[230px]" />
+            <div className="absolute inset-x-0 bottom-[9%] grid gap-x-8 gap-y-10 px-6 sm:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-24 2xl:px-32">
               {FEATURES.map(({ icon: Icon, title, body }) => (
-                <div key={title} className="flex gap-4">
-                  <span className="grid size-12 shrink-0 place-items-center rounded-xl border border-nairobi/70 text-white">
-                    <Icon className="size-5" strokeWidth={1.8} />
+                <div key={title} className="flex gap-5">
+                  <span className="grid size-[50px] shrink-0 place-items-center rounded-[10px] border border-nairobi/60 text-white">
+                    <Icon className="size-[22px]" strokeWidth={1.7} />
                   </span>
-                  <div>
-                    <p className="text-[1.1rem] font-medium text-white">
-                      {title}
-                    </p>
-                    <p className="mt-1.5 text-[0.95rem] leading-relaxed text-white/60">
-                      {body}
-                    </p>
+                  <div className="pt-0.5">
+                    <p className="text-[1.15rem] text-white">{title}</p>
+                    <p className="mt-1.5 max-w-[16rem] text-[0.95rem] leading-snug text-white/60">{body}</p>
                   </div>
                 </div>
               ))}
