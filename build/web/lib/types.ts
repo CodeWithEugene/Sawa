@@ -26,8 +26,8 @@ export interface Evidence {
 }
 
 export interface Statement {
-  role: "originated" | "developed"
-  writer: Writer
+  role: "originated" | "developed" | "generated"
+  writer: Writer | "ai"
   tv: TV
   band: Band
   evidence: Evidence[]
@@ -43,6 +43,8 @@ export interface ElementRow {
   shares: Record<Writer, number | null>
   contributions: Record<Writer, number | null>
   blocked: boolean
+  ai_generated?: boolean
+  ai_points?: number
   statements: Statement[]
   claimed?: Record<Writer, "o" | "d" | "-">
 }
@@ -55,6 +57,7 @@ export interface ProofBody {
   lib_nal_sha256?: string
   elements: ElementRow[]
   totals: Record<Writer, number | null>
+  ai_points?: number
   withdrawn?: {
     id: string
     record: string
@@ -104,6 +107,17 @@ export interface Disputed {
   nairobi: Record<Writer, string>
 }
 
+export interface AiDisclosure {
+  record: string
+  tool: string
+  element: string | null
+  used_by: Writer
+  use: "generated" | "assistive" | "voice-model"
+  detail: string
+  voice_of?: Writer
+  consent?: string | null
+}
+
 export interface Explanation {
   elements: Record<string, Record<Lang, string>>
   evidence: Record<string, Record<Lang, string>>
@@ -123,6 +137,8 @@ export interface SignedRecord {
     omega: string
     proof_hash: string
     stems: { file: string; hash: string }[]
+    ai_points?: number
+    ai_disclosure?: AiDisclosure[]
     writers: Record<Writer, { name: string; city: string; role: string }>
     signatures: Record<Writer, { name: string; at: string }>
   }
@@ -140,6 +156,7 @@ export interface SessionState {
   signatures: Partial<Record<Writer, { name: string; at: string }>>
   record: SignedRecord | null
   explanation: Explanation | null
+  ai_disclosure: AiDisclosure[]
   headline: Record<Lang, string>
   contests: { record: string; by: Writer; reason: string }[]
   engine: { omega: string; hyperon: string }
@@ -147,7 +164,7 @@ export interface SessionState {
 
 export interface SongRecord {
   id: string
-  kind: "artefact" | "message" | "co-edit" | "claim" | "dispute"
+  kind: "artefact" | "message" | "co-edit" | "claim" | "dispute" | "ai-generation" | "ai-assist" | "ai-voice" | "consent"
   author: Writer
   to?: Writer
   at: number
@@ -164,6 +181,10 @@ export interface SongRecord {
   credits?: { element: string; role: string; writer: Writer }[]
   confirmed_by?: Writer
   attachment?: { record: string; element: string }
+  tool?: string
+  prompt?: string
+  voice_of?: Writer
+  consent?: string
 }
 
 export interface Song {

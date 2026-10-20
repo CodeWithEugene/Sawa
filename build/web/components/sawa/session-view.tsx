@@ -168,24 +168,24 @@ export function SessionView() {
         <SessionMenu />
       </SiteHeader>
       <main className="w-full px-6 pt-8 pb-24 md:px-10 lg:px-16 2xl:px-24">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="eyebrow">
-              {song?.campaign ?? "Synthetic data"} · {t(lang, "synthetic")}
+            <p className="text-sm text-muted-foreground">
+              {lang === "en" ? "Demo song · all people and files are fictional" : "Wimbo wa mfano · watu na faili zote ni za kubuni"}
             </p>
-            <h1 className="mt-2 font-display text-5xl leading-none font-[540] tracking-[-0.03em] md:text-6xl">
+            <h1 className="mt-2 text-5xl leading-none font-medium tracking-[-0.045em] md:text-6xl">
               {song ? song.title : <Skeleton className="h-12 w-72" />}
             </h1>
             {song && (
-              <p className="mt-1 font-display text-lg text-muted-foreground italic">
-                {song.subtitle} · {song.bpm} BPM · {song.key} · {song.made}
+              <p className="mt-2 text-lg text-muted-foreground">
+                &ldquo;{song.subtitle}&rdquo; · {lang === "en" ? "written by Wanjiru in Nairobi and Malik in Harlem, over WhatsApp" : "imeandikwa na Wanjiru Nairobi na Malik Harlem, kupitia WhatsApp"}
               </p>
             )}
           </div>
-          <p className="max-w-sm text-sm text-muted-foreground">
+          <p className="max-w-md text-muted-foreground">
             {lang === "en"
-              ? "Two Omega agents, two memories. Each reconciles on its own atom space with Omega's lib_nal.metta."
-              : "Mawakala wawili wa Omega, kumbukumbu mbili. Kila mmoja anapatanisha kwenye nafasi yake ya atomu kwa lib_nal.metta ya Omega."}
+              ? "A buyer wants to license the song. First, the two writers need to agree who wrote what."
+              : "Mnunuzi anataka leseni ya wimbo. Kwanza, waandishi wawili wanahitaji kukubaliana nani aliandika nini."}
           </p>
         </div>
 

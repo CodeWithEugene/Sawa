@@ -12,14 +12,14 @@ EL_NAME = {e[0]: {"en": e[3], "sw": e[4]} for e in ELEMENTS}
 FIRST = {w: v["name"].split()[0] for w, v in WRITERS.items()}
 
 RULE_NAME = {
-    "artefact": {"en": "Hashed file", "sw": "Faili yenye hash"},
-    "co-edit": {"en": "Shared document edit", "sw": "Uhariri wa hati ya pamoja"},
-    "other-party-statement": {"en": "Statement by the other writer", "sw": "Kauli ya mwandishi mwingine"},
-    "recollection": {"en": "Own recollection", "sw": "Kumbukumbu binafsi"},
-    "received-before-created": {"en": "Defeater: received before created", "sw": "Kizuizi: ilipokelewa kabla ya kutengenezwa"},
-    "recollection-after-dispute": {"en": "Defeater: recollection after dispute", "sw": "Kizuizi: kumbukumbu baada ya mzozo"},
-    "ai-generation": {"en": "AI generator export", "sw": "Faili ya kitengenezaji cha AI"},
-    "generated-before-edited": {"en": "Defeater: edited after AI generated it", "sw": "Kizuizi: ilihaririwa baada ya AI kuitengeneza"},
+    "artefact": {"en": "File with a fingerprint", "sw": "Faili yenye alama"},
+    "co-edit": {"en": "Lyric document edit", "sw": "Uhariri wa hati ya maneno"},
+    "other-party-statement": {"en": "The other writer's own words", "sw": "Maneno ya mwandishi mwingine"},
+    "recollection": {"en": "Own memory", "sw": "Kumbukumbu binafsi"},
+    "received-before-created": {"en": "Made after receiving the other's version", "sw": "Ilitengenezwa baada ya kupokea toleo la mwingine"},
+    "recollection-after-dispute": {"en": "Memory written after the dispute", "sw": "Kumbukumbu iliyoandikwa baada ya mzozo"},
+    "ai-generation": {"en": "AI generator file", "sw": "Faili ya kitengenezaji cha AI"},
+    "generated-before-edited": {"en": "Edited after the AI made it", "sw": "Ilihaririwa baada ya AI kuitengeneza"},
 }
 
 BAND_NAME = {

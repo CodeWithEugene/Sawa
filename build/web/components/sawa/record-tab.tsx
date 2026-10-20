@@ -115,10 +115,10 @@ function Certificate() {
               ? "Split Sheet · Signed In The Session"
               : "Karatasi Ya Mgao · Imesainiwa Kikaoni"}
           </p>
-          <h3 className="mt-3 font-display text-5xl font-[560] tracking-tight">
+          <h3 className="mt-3 text-5xl font-medium tracking-[-0.045em]">
             {b.title}
           </h3>
-          <p className="font-display text-xl text-muted-foreground italic">
+          <p className="text-xl text-muted-foreground">
             {song.subtitle}
           </p>
         </div>
@@ -134,7 +134,7 @@ function Certificate() {
         ).map(([k, split]) => (
           <div key={k}>
             <p className="eyebrow">{t(lang, k)}</p>
-            <p className="tabular mt-2 font-display text-3xl">
+            <p className="tabular mt-2 text-3xl font-medium tracking-[-0.03em]">
               <span className="text-nairobi-ink">{pct(split.wanjiru)}</span>
               <span className="mx-2 text-muted-foreground">/</span>
               <span className="text-harlem-ink">{pct(split.malik)}</span>
@@ -192,6 +192,35 @@ function Certificate() {
           </dd>
         </div>
       </dl>
+
+      {b.ai_disclosure && b.ai_disclosure.length > 0 && (
+        <div className="relative mt-6 rounded-xl border border-border p-5" data-testid="ai-disclosure">
+          <p className="font-medium">{lang === "en" ? "AI Disclosure" : "Ufichuzi Wa AI"}</p>
+          <ul className="mt-3 space-y-2.5 text-sm">
+            {b.ai_disclosure.map((d) => (
+              <li key={d.record} className="flex gap-3">
+                <span className="mt-0.5 h-fit rounded-md bg-ink px-1.5 py-0.5 text-[0.65rem] font-medium text-white">AI</span>
+                <span>
+                  <span className="font-medium">{d.tool}</span>{" "}
+                  <span className="text-muted-foreground">
+                    {d.use === "generated"
+                      ? lang === "en"
+                        ? `generated the drum groove from Malik's prompt. ${b.ai_points} points owned by no one.`
+                        : `ilitengeneza mdundo wa ngoma kutoka kwa maelezo ya Malik. Pointi ${b.ai_points} hazimilikiwi na mtu.`
+                      : d.use === "voice-model"
+                        ? lang === "en"
+                          ? "used for a demo guide vocal, with Wanjiru's consent, not in the release."
+                          : "ilitumika kwa sauti ya demo, kwa ridhaa ya Wanjiru, si kwenye toleo la mwisho."
+                        : lang === "en"
+                          ? "used for mastering only. No effect on authorship."
+                          : "ilitumika kwa mastering tu. Haiathiri uandishi."}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="relative mt-6 flex flex-wrap items-center gap-2 text-sm">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-truth px-3 py-1 text-paper">

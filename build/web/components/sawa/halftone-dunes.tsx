@@ -47,10 +47,10 @@ float ridge(float li, float x, float W, float H) {
   float calm = 1.0 - v * 0.85;
   float y;
   if (li < 0.5) {
-    y = 0.035 + 0.2 * v + calm * 0.012 * sin(u * 9.0 + 0.6 + t * 0.55)
+    y = 0.04 + 0.09 * v + calm * 0.012 * sin(u * 9.0 + 0.6 + t * 0.55)
       + calm * 0.006 * sin(u * 23.0 + 1.9 + t * 0.4);
   } else if (li < 1.5) {
-    y = 0.21 + 0.12 * v + 0.016 * sin(u * 7.0 + 2.2 + t * 0.45)
+    y = 0.19 + 0.07 * v + 0.016 * sin(u * 7.0 + 2.2 + t * 0.45)
       + 0.008 * sin(u * 19.0 + 0.4 + t * 0.6);
   } else {
     y = 0.36 + 0.05 * v + 0.018 * sin(u * 6.0 + 4.1 + t * 0.35)

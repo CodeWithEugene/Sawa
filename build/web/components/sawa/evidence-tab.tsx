@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   AudioLines,
+  Bot,
   Check,
   FileMusic,
   FileText,
@@ -10,7 +11,9 @@ import {
   Loader2,
   MessageCircle,
   Mic,
+  MicVocal,
   ScrollText,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react"
 
@@ -32,13 +35,17 @@ import { t } from "@/lib/i18n"
 import type { JevReading, Lang, Song, SongRecord } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-const KIND_ICON = {
+const KIND_ICON: Record<string, typeof FileMusic> = {
   artefact: FileMusic,
   message: MessageCircle,
   "co-edit": FileText,
   claim: ScrollText,
   dispute: AudioLines,
-} as const
+  "ai-generation": Bot,
+  "ai-assist": Bot,
+  "ai-voice": MicVocal,
+  consent: ShieldCheck,
+}
 
 function choiceText(choice: string, song: Song, lang: Lang): string {
   if (choice === "none")
@@ -173,7 +180,7 @@ function RecordCard({
   const Icon =
     rec.kind === "artefact" && rec.file?.endsWith(".m4a")
       ? Mic
-      : KIND_ICON[rec.kind]
+      : (KIND_ICON[rec.kind] ?? FileText)
   const agent = WRITER_AGENT[rec.author]
   const both = rec.holders.length === 2
   const isMsg = rec.kind === "message"
@@ -242,7 +249,7 @@ function RecordCard({
           </div>
         )}
         {rec.kind === "co-edit" && (
-          <p className="mt-2 border-l-2 border-border pl-3 font-display text-lg italic">
+          <p className="mt-2 border-l-2 border-border pl-3 text-lg">
             &ldquo;{rec.text}&rdquo;
           </p>
         )}
@@ -259,6 +266,39 @@ function RecordCard({
                 <Hash className="size-3" /> {shortHash(rec.hash, 10)}
               </span>
             )}
+          </div>
+        )}
+        {(rec.kind === "ai-generation" || rec.kind === "ai-assist" || rec.kind === "ai-voice") && (
+          <div className="mt-2 max-w-xl rounded-xl border border-border bg-card px-4 py-3 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-md bg-ink px-2 py-0.5 text-[0.7rem] font-medium text-white">AI</span>
+              <span className="font-medium">{rec.tool}</span>
+            </div>
+            {rec.prompt && (
+              <p className="mt-2 text-muted-foreground">
+                {lang === "en" ? "Prompt" : "Maelezo"}: <span className="text-foreground italic">&ldquo;{rec.prompt}&rdquo;</span>
+              </p>
+            )}
+            <p className="mt-1 text-muted-foreground">{lang === "en" ? rec.detail : rec.detail_sw}</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {rec.kind === "ai-generation"
+                ? lang === "en"
+                  ? "Recorded and disclosed. No person owns what the machine made."
+                  : "Imerekodiwa na kuwekwa wazi. Hakuna mtu anayemiliki kilichotengenezwa na mashine."
+                : rec.kind === "ai-voice"
+                  ? lang === "en"
+                    ? "Allowed only because Wanjiru gave consent, for the demo only."
+                    : "Imeruhusiwa kwa sababu Wanjiru alitoa ridhaa, kwa demo tu."
+                  : lang === "en"
+                    ? "Assistive only. Disclosed, with no effect on who wrote what."
+                    : "Msaada tu. Imewekwa wazi, haiathiri nani aliandika nini."}
+            </p>
+          </div>
+        )}
+        {rec.kind === "consent" && (
+          <div className="mt-2 max-w-xl rounded-xl border border-truth/30 bg-truth-soft/50 px-4 py-3 text-sm">
+            <p className="font-medium">{rec.text}</p>
+            {rec.translation && <p className="mt-1 text-xs text-muted-foreground italic">{rec.translation}</p>}
           </div>
         )}
         {(rec.kind === "claim" || rec.kind === "dispute") && (
@@ -325,35 +365,32 @@ export function EvidenceTab() {
     days.set(d, [...(days.get(d) ?? []), r])
   }
   return (
-    <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
-      <aside className="space-y-3 text-sm text-muted-foreground lg:sticky lg:top-40 lg:self-start">
-        <p className="eyebrow">
-          {lang === "en" ? "Evidence Kinds" : "Aina Za Ushahidi"}
+    <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
+      <aside className="space-y-4 text-sm text-muted-foreground lg:sticky lg:top-24 lg:self-start">
+        <p className="text-sm font-medium text-foreground">
+          {lang === "en" ? "How much each kind counts" : "Kila aina ina uzito gani"}
         </p>
-        <p>
-          {lang === "en" ? "Hashed file" : "Faili yenye hash"}{" "}
-          <code className="font-mono text-xs">stv 1.0 0.81</code>
-        </p>
-        <p>
-          {lang === "en" ? "Shared doc edit" : "Uhariri wa hati"}{" "}
-          <code className="font-mono text-xs">0.75</code>
-        </p>
-        <p>
-          {lang === "en" ? "Other writer's statement" : "Kauli ya mwingine"}{" "}
-          <code className="font-mono text-xs">0.70</code>
-        </p>
-        <p>
-          {lang === "en" ? "Own recollection" : "Kumbukumbu binafsi"}{" "}
-          <code className="font-mono text-xs">0.45</code>
-        </p>
-        <p>
-          {lang === "en" ? "After the dispute" : "Baada ya mzozo"}{" "}
-          <code className="font-mono text-xs">0.27</code>
-        </p>
+        {[
+          [lang === "en" ? "File with a fingerprint and timestamp" : "Faili yenye alama na muhuri wa wakati", 81],
+          [lang === "en" ? "Shared lyric document edit" : "Uhariri wa hati ya maneno", 75],
+          [lang === "en" ? "The other writer's own words" : "Maneno ya mwandishi mwingine", 70],
+          [lang === "en" ? "Your own memory" : "Kumbukumbu yako", 45],
+          [lang === "en" ? "Memory written after the dispute" : "Kumbukumbu baada ya mzozo", 27],
+        ].map(([label, v]) => (
+          <div key={label as string}>
+            <div className="flex justify-between gap-3">
+              <span>{label}</span>
+              <span className="tabular font-medium text-foreground">{v}%</span>
+            </div>
+            <div className="mt-1 h-1 rounded-full bg-muted">
+              <div className="h-full rounded-full bg-foreground/70" style={{ width: `${v}%` }} />
+            </div>
+          </div>
+        ))}
         <p className="pt-2 text-xs leading-relaxed">
           {lang === "en"
-            ? "Confidence comes from one Omega deduction: the event is on record, times the reliability rule for its kind."
-            : "Uhakika unatokana na makato moja ya Omega: tukio limerekodiwa, mara sheria ya kuaminika ya aina yake."}
+            ? "Records made at the time count more than memories made later. The agents combine all of it before deciding."
+            : "Rekodi za wakati huo zina uzito zaidi kuliko kumbukumbu za baadaye. Mawakala wanaunganisha yote kabla ya kuamua."}
         </p>
       </aside>
       <div className="space-y-6">

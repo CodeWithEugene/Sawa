@@ -40,7 +40,7 @@ export function SplitBar({
         )}
       </div>
       {showLabels && (
-        <div className="tabular mt-1.5 flex justify-between font-mono text-[0.72rem] text-muted-foreground">
+        <div className="tabular mt-1.5 flex justify-between text-xs text-muted-foreground">
           <span className="text-nairobi-ink">Wanjiru {pct(wanjiru)}</span>
           <span className="text-harlem-ink">Malik {pct(malik)}</span>
         </div>
