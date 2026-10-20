@@ -1,0 +1,5 @@
+web
+agent/.venv
+agent/tests
+agent/.coverage
+.env
