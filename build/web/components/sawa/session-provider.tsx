@@ -3,7 +3,13 @@
 import * as React from "react"
 
 import { api } from "@/lib/api"
-import type { Lang, SessionEvent, SessionState, Song, Writer } from "@/lib/types"
+import type {
+  Lang,
+  SessionEvent,
+  SessionState,
+  Song,
+  Writer,
+} from "@/lib/types"
 
 const STORE_KEY = "sawa:session:v1"
 const LANG_KEY = "sawa:lang"
@@ -21,7 +27,10 @@ interface SessionContextValue {
   contest: (record: string, by: Writer, reason: string) => Promise<void>
   withdrawContest: (record: string) => Promise<void>
   sign: (writer: Writer, name: string) => Promise<void>
-  setPack: (agent: "harlem" | "nairobi", version: "split-v1" | "split-v0") => Promise<void>
+  setPack: (
+    agent: "harlem" | "nairobi",
+    version: "split-v1" | "split-v0"
+  ) => Promise<void>
   reset: () => Promise<void>
 }
 
@@ -48,7 +57,13 @@ function writeStored(key: string, value: unknown): void {
 // reconcile moment reads clearly on screen even when results are cached.
 const MIN_REASONING_MS = 1400
 
-export function SessionProvider({ songId, children }: { songId: string; children: React.ReactNode }) {
+export function SessionProvider({
+  songId,
+  children,
+}: {
+  songId: string
+  children: React.ReactNode
+}) {
   const [song, setSong] = React.useState<Song | null>(null)
   const [state, setState] = React.useState<SessionState | null>(null)
   const [events, setEvents] = React.useState<SessionEvent[]>([])
@@ -79,7 +94,10 @@ export function SessionProvider({ songId, children }: { songId: string; children
 
   React.useEffect(() => {
     const storedLang = readStored<Lang>(LANG_KEY, "en")
-    const stored = readStored<{ songId: string; events: SessionEvent[] } | null>(STORE_KEY, null)
+    const stored = readStored<{
+      songId: string
+      events: SessionEvent[]
+    } | null>(STORE_KEY, null)
     const initial = stored && stored.songId === songId ? stored.events : []
     api
       .song(songId)
@@ -87,7 +105,9 @@ export function SessionProvider({ songId, children }: { songId: string; children
         setSong(s)
         setLangState(storedLang)
       })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Could not load the song"))
+      .catch((e: unknown) =>
+        setError(e instanceof Error ? e.message : "Could not load the song")
+      )
     api
       .run(songId, initial)
       .then((result) => {
@@ -97,10 +117,16 @@ export function SessionProvider({ songId, children }: { songId: string; children
         // result is cached on the instance before anyone clicks Reconcile.
         // Nothing from this call is shown.
         if (result.phase !== "reconciled") {
-          api.run(songId, [{ type: "exchange" }, { type: "reconcile" }]).catch(() => undefined)
+          api
+            .run(songId, [{ type: "exchange" }, { type: "reconcile" }])
+            .catch(() => undefined)
         }
       })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "The agents could not be reached"))
+      .catch((e: unknown) =>
+        setError(
+          e instanceof Error ? e.message : "The agents could not be reached"
+        )
+      )
       .finally(() => setBusy(null))
   }, [songId])
 
@@ -116,17 +142,33 @@ export function SessionProvider({ songId, children }: { songId: string; children
       writeStored(LANG_KEY, l)
     },
     exchange: () => run([...events, { type: "exchange" }], "exchange", 900),
-    reconcile: () => run([...events, { type: "reconcile" }], "reconcile", MIN_REASONING_MS),
+    reconcile: () =>
+      run([...events, { type: "reconcile" }], "reconcile", MIN_REASONING_MS),
     contest: (record, by, reason) =>
-      run([...events, { type: "contest", record, by, reason }], "contest", MIN_REASONING_MS),
-    withdrawContest: (record) => run([...events, { type: "withdraw-contest", record }], "contest", 600),
+      run(
+        [...events, { type: "contest", record, by, reason }],
+        "contest",
+        MIN_REASONING_MS
+      ),
+    withdrawContest: (record) =>
+      run([...events, { type: "withdraw-contest", record }], "contest", 600),
     sign: (writer, name) =>
-      run([...events, { type: "sign", writer, name, at: new Date().toISOString() }], `sign-${writer}`, 500),
-    setPack: (agent, version) => run([...events, { type: "pack", agent, version }], "pack"),
+      run(
+        [
+          ...events,
+          { type: "sign", writer, name, at: new Date().toISOString() },
+        ],
+        `sign-${writer}`,
+        500
+      ),
+    setPack: (agent, version) =>
+      run([...events, { type: "pack", agent, version }], "pack"),
     reset: () => run([], "reset"),
   }
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+  return (
+    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+  )
 }
 
 export function useSession(): SessionContextValue {

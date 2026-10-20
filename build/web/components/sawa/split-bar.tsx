@@ -10,7 +10,13 @@ type Props = {
 }
 
 /** One horizontal bar per split. Terracotta for Wanjiru, indigo for Malik. */
-export function SplitBar({ wanjiru, malik, className, showLabels = true, thin }: Props) {
+export function SplitBar({
+  wanjiru,
+  malik,
+  className,
+  showLabels = true,
+  thin,
+}: Props) {
   const known = wanjiru !== null && malik !== null
   const w = known ? wanjiru : 50
   return (
@@ -19,7 +25,8 @@ export function SplitBar({ wanjiru, malik, className, showLabels = true, thin }:
         className={cn(
           "relative flex overflow-hidden rounded-full bg-muted",
           thin ? "h-1.5" : "h-2.5",
-          !known && "bg-[repeating-linear-gradient(45deg,var(--muted)_0_6px,var(--rule)_6px_8px)]"
+          !known &&
+            "bg-[repeating-linear-gradient(45deg,var(--muted)_0_6px,var(--rule)_6px_8px)]"
         )}
       >
         {known && (
@@ -33,7 +40,7 @@ export function SplitBar({ wanjiru, malik, className, showLabels = true, thin }:
         )}
       </div>
       {showLabels && (
-        <div className="mt-1.5 flex justify-between font-mono text-[0.72rem] tabular text-muted-foreground">
+        <div className="tabular mt-1.5 flex justify-between font-mono text-[0.72rem] text-muted-foreground">
           <span className="text-nairobi-ink">Wanjiru {pct(wanjiru)}</span>
           <span className="text-harlem-ink">Malik {pct(malik)}</span>
         </div>

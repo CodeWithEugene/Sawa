@@ -41,7 +41,12 @@ export function ContestDialog({ record, recordLabel, defaultBy }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="ghost" size="xs" className="text-muted-foreground hover:text-destructive" data-testid={`contest-${record}`}>
+          <Button
+            variant="ghost"
+            size="xs"
+            className="text-muted-foreground hover:text-destructive"
+            data-testid={`contest-${record}`}
+          >
             <Flag data-icon="inline-start" /> {t(lang, "contest")}
           </Button>
         }
@@ -59,7 +64,9 @@ export function ContestDialog({ record, recordLabel, defaultBy }: Props) {
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label>{lang === "en" ? "Who Is Contesting" : "Nani Anapinga"}</Label>
+            <Label>
+              {lang === "en" ? "Who Is Contesting" : "Nani Anapinga"}
+            </Label>
             <div className="grid grid-cols-2 gap-2">
               {(["malik", "wanjiru"] as Writer[]).map((w) => (
                 <button
@@ -81,20 +88,36 @@ export function ContestDialog({ record, recordLabel, defaultBy }: Props) {
             </div>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="contest-reason">{lang === "en" ? "Reason" : "Sababu"}</Label>
+            <Label htmlFor="contest-reason">
+              {lang === "en" ? "Reason" : "Sababu"}
+            </Label>
             <Textarea
               id="contest-reason"
               data-testid="contest-reason"
               value={reason}
               maxLength={280}
               onChange={(e) => setReason(e.target.value)}
-              placeholder={lang === "en" ? "Why should this not count?" : "Kwa nini hii isihesabiwe?"}
+              placeholder={
+                lang === "en"
+                  ? "Why should this not count?"
+                  : "Kwa nini hii isihesabiwe?"
+              }
             />
           </div>
         </div>
         <DialogFooter>
-          <DialogClose render={<Button variant="outline">{lang === "en" ? "Cancel" : "Ghairi"}</Button>} />
-          <Button onClick={() => void submit()} disabled={!reason.trim() || !!busy} data-testid="contest-submit">
+          <DialogClose
+            render={
+              <Button variant="outline">
+                {lang === "en" ? "Cancel" : "Ghairi"}
+              </Button>
+            }
+          />
+          <Button
+            onClick={() => void submit()}
+            disabled={!reason.trim() || !!busy}
+            data-testid="contest-submit"
+          >
             {lang === "en" ? "Withdraw And Recompute" : "Ondoa Na Kokotoa Upya"}
           </Button>
         </DialogFooter>

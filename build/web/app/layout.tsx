@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Fraunces, Instrument_Sans, JetBrains_Mono } from "next/font/google"
+import { Geist, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -7,22 +7,17 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
-const display = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-display",
-  axes: ["SOFT", "WONK", "opsz"],
-})
-const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-sans" })
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
+const sans = Geist({ subsets: ["latin"], variable: "--font-sans" })
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
-  title: "Sawa: One Split Sheet",
+  title: "Sawa: Fair Credit For Every Song",
   description:
-    "Two creators. Two memories. One split sheet. Two SingularityNET Omega agents reason from conflicting memories of a co-write to one signed split sheet, in English and Swahili.",
+    "Sawa helps co-writers agree who wrote what, fairly and on the record, so their music can be licensed and paid.",
   metadataBase: new URL("https://sawa.codewitheugene.top"),
   icons: { icon: "/icon.svg" },
   openGraph: {
-    title: "Sawa: One Split Sheet",
+    title: "Sawa: Fair Credit For Every Song",
     description: "Two creators. Two memories. One split sheet.",
     images: ["/og.png"],
   },
@@ -33,7 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", display.variable, sans.variable, mono.variable)}
+      className={cn("antialiased", sans.variable, mono.variable)}
     >
       <body className="min-h-dvh font-sans">
         <ThemeProvider>

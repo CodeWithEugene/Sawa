@@ -3,14 +3,61 @@ import Link from "next/link"
 import { SawaLogo } from "./brand"
 import { cn } from "@/lib/utils"
 
-export function SiteHeader({ children, className }: { children?: React.ReactNode; className?: string }) {
+const NAV = [
+  { href: "/#how", label: "How It Works" },
+  { href: "/#artists", label: "For Artists" },
+  { href: "/#ai", label: "AI Music" },
+  { href: "/#omega", label: "Technology" },
+]
+
+export function SiteHeader({
+  children,
+  className,
+  nav = false,
+}: {
+  children?: React.ReactNode
+  className?: string
+  nav?: boolean
+}) {
   return (
-    <header className={cn("sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md", className)}>
-      <div className="mx-auto flex h-16 max-w-[1320px] items-center gap-6 px-5 md:px-8">
-        <Link href="/" className="rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/40" aria-label="Sawa home">
+    <header
+      className={cn(
+        "sticky top-0 z-40 bg-background/80 backdrop-blur-lg",
+        className
+      )}
+    >
+      <div className="mx-auto flex h-[72px] w-full items-center gap-8 px-6 md:px-10 lg:px-16 2xl:px-24">
+        <Link
+          href="/"
+          className="rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
+          aria-label="Sawa home"
+        >
           <SawaLogo size={26} />
         </Link>
-        <div className="flex flex-1 items-center justify-end gap-3">{children}</div>
+        {nav && (
+          <nav
+            aria-label="Main"
+            className="hidden flex-1 justify-center gap-10 md:flex"
+          >
+            {NAV.map((n) => (
+              <a
+                key={n.href}
+                href={n.href}
+                className="text-[0.95rem] text-foreground/80 transition-colors hover:text-foreground"
+              >
+                {n.label}
+              </a>
+            ))}
+          </nav>
+        )}
+        <div
+          className={cn(
+            "flex items-center justify-end gap-3",
+            !nav && "flex-1"
+          )}
+        >
+          {children}
+        </div>
       </div>
     </header>
   )
@@ -18,14 +65,13 @@ export function SiteHeader({ children, className }: { children?: React.ReactNode
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/70">
-      <div className="mx-auto flex max-w-[1320px] flex-col gap-3 px-5 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between md:px-8">
+    <footer className="bg-ink text-white/60">
+      <div className="flex w-full flex-col gap-4 px-6 py-10 text-sm md:flex-row md:items-center md:justify-between md:px-10 lg:px-16 2xl:px-24">
         <p>
-          Built on SingularityNET <span className="font-medium text-foreground">Omega</span> (lib_nal.metta v0.1.20, unmodified) and MeTTa on Hyperon. Synthetic data only.
+          Built on SingularityNET Omega. All people, songs and files in the demo
+          are fictional.
         </p>
-        <p className="font-mono text-xs tracking-wide">
-          State of the Art Hackathon 2026 · Team Technetians
-        </p>
+        <p>State of the Art Hackathon 2026 · Team Technetians</p>
       </div>
     </footer>
   )

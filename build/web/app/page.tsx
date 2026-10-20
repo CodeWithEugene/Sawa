@@ -1,234 +1,403 @@
 import Link from "next/link"
-import { ArrowRight, FileAudio, GitMerge, Languages, PenLine, ScanSearch, ShieldCheck } from "lucide-react"
+import {
+  ArrowRight,
+  AudioWaveform,
+  BadgeCheck,
+  FileCheck2,
+  Handshake,
+  Languages,
+  MicVocal,
+  Scale,
+  ShieldCheck,
+  SlidersHorizontal,
+  Users,
+} from "lucide-react"
 
-import { SawaMark } from "@/components/sawa/brand"
+import { HalftoneDunes } from "@/components/sawa/halftone-dunes"
 import { SiteFooter, SiteHeader } from "@/components/sawa/site-header"
-import { Vinyl } from "@/components/sawa/vinyl"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-const SESSION = "/session/amani-ni-sisi"
+const DEMO = "/session/amani-ni-sisi"
 
-const steps = [
+const FEATURES = [
   {
-    n: "01",
-    title: "Remember",
-    body: "Each writer has an Omega agent that holds only their side of the session: files with hashes and timestamps, chat messages, document edits, their own account.",
-    icon: FileAudio,
+    icon: Scale,
+    title: "Fair By Evidence",
+    body: "Shares come from the files, messages and edits, not from who argues loudest.",
   },
   {
-    n: "02",
-    title: "Reconcile",
-    body: "The agents exchange evidence as atoms, never audio. Each one reasons on its own with Omega's NAL: defeaters, revision, truth values. Same evidence, same rules, same proof hash.",
-    icon: GitMerge,
+    icon: Handshake,
+    title: "Both Sides Agree",
+    body: "Each writer has their own agent. Nothing counts until both reach the same answer.",
   },
   {
-    n: "03",
-    title: "Sign",
-    body: "Every share explains itself in English or Swahili. Either writer can contest any premise. Nothing counts until both sign, and the signed sheet is hashed.",
-    icon: PenLine,
+    icon: Languages,
+    title: "Clear In Your Language",
+    body: "Every share is explained in plain English or Swahili.",
+  },
+  {
+    icon: FileCheck2,
+    title: "Ready To License",
+    body: "Signed in the session, with any AI use disclosed.",
   },
 ]
 
-const trust = [
-  ["The AI will side with whoever paid for it.", "Each writer has their own agent. The answer only counts when both agents reach the same proof hash."],
-  ["It will make up who wrote what.", "Shares come only from evidence the writers supplied and confirmed. Every share shows its sources."],
-  ["I can't argue with it.", "Contest any premise with a reason. It is recorded, and both agents recompute in front of you."],
-  ["It's not in my language.", "Every explanation in English and Swahili, rendered from the same proof."],
+const STEPS = [
+  {
+    n: "1",
+    title: "Each writer brings their side",
+    body: "Voice memos, project files, lyric edits and chats. Each writer's agent remembers only what that writer made and saw.",
+  },
+  {
+    n: "2",
+    title: "The agents weigh the evidence",
+    body: "They share what they hold and work through it on their own. Both must land on the same split, or Sawa says so.",
+  },
+  {
+    n: "3",
+    title: "Everyone sees why, then signs",
+    body: "Every percentage comes with a reason. Disagree with something? Challenge it, and the split is recalculated in front of you.",
+  },
 ]
 
-const RULE = `;; D1 received-before-created
-;; A file made after its maker received the other
-;; writer's version of the same part is evidence
-;; of developing that part, not starting it.
-(= (select artefact $by $t $el $role)
-   (if (and (== $role originated)
-            (received-before $by $el $t))
-       (received-before-created developed)
-       (artefact $role)))
-
-;; every truth value is one Omega deduction
-(|-nal ((observed $id) (stv 1.0 0.9))
-       ((==> (observed $id) ($role $el $w)) $rule-tv))`
+function Rings({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 480 300" className={className} aria-hidden>
+      <defs>
+        <clipPath id="hero-l">
+          <circle cx="180" cy="150" r="128" />
+        </clipPath>
+      </defs>
+      <circle
+        cx="180"
+        cy="150"
+        r="128"
+        fill="none"
+        stroke="var(--nairobi)"
+        strokeWidth="14"
+      />
+      <circle
+        cx="300"
+        cy="150"
+        r="128"
+        fill="none"
+        stroke="var(--harlem)"
+        strokeWidth="14"
+      />
+      <circle
+        cx="300"
+        cy="150"
+        r="121"
+        fill="var(--ink)"
+        clipPath="url(#hero-l)"
+      />
+    </svg>
+  )
+}
 
 export default function Home() {
   return (
     <>
-      <SiteHeader>
-        <span className="hidden font-mono text-[0.7rem] tracking-[0.14em] text-muted-foreground uppercase md:inline">
-          Omega · MeTTa · Two Agents
-        </span>
-        <Link href={SESSION} className={cn(buttonVariants({ size: "lg" }), "rounded-full px-4")}>
-          Open The Session <ArrowRight data-icon="inline-end" />
+      <SiteHeader nav>
+        <Link
+          href={DEMO}
+          className="text-[0.95rem] font-medium text-foreground/80 transition-colors hover:text-foreground"
+        >
+          Try The Demo
         </Link>
       </SiteHeader>
 
       <main>
         {/* hero */}
         <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-[1320px] gap-10 px-5 pt-14 pb-20 md:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:pt-20 lg:pb-28">
-            <div className="relative z-10 flex flex-col justify-center">
-              <p className="eyebrow animate-rise">Two Agents, One Truth · Harlem and Nairobi</p>
-              <h1 className="font-display mt-5 text-[clamp(2.9rem,6.4vw,6.2rem)] leading-[0.92] font-[520] tracking-[-0.035em] text-balance animate-rise [animation-delay:80ms]">
-                Two creators.
-                <br />
-                Two memories.
-                <br />
-                <span className="font-display-wonk italic text-truth-ink">One split sheet.</span>
-              </h1>
-              <p className="mt-7 max-w-[34rem] text-lg leading-relaxed text-muted-foreground animate-rise [animation-delay:160ms]">
-                Every co-written song has two memories of how it was made, and they never match. Sawa gives each
-                writer a SingularityNET Omega agent that remembers their side. The agents start in disagreement and
-                reason, on their own, to the same split sheet, with a proof both writers can read, contest and sign.
-              </p>
-              <div className="mt-9 flex flex-wrap items-center gap-3 animate-rise [animation-delay:240ms]">
-                <Link href={SESSION} className={cn(buttonVariants({ size: "lg" }), "h-11 rounded-full px-6 text-[0.95rem]")}>
-                  Settle &ldquo;Amani Ni Sisi&rdquo; <ArrowRight data-icon="inline-end" />
-                </Link>
-                <a href="#how" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 rounded-full px-5 text-[0.95rem]")}>
-                  How Sawa Works
-                </a>
-              </div>
-            </div>
-
-            {/* the sleeve */}
-            <div className="relative mx-auto h-[440px] w-full max-w-[560px] animate-rise [animation-delay:200ms] lg:h-[520px]">
-              <div className="absolute top-4 right-2 left-10 h-[380px] rotate-[2.5deg] rounded-[1.4rem] border border-border bg-card shadow-xl lg:h-[440px]">
-                <div className="flex h-full flex-col justify-between p-7">
-                  <div>
-                    <p className="eyebrow">Liner Notes · Synthetic</p>
-                    <p className="font-display mt-3 text-4xl font-[560] tracking-tight">Amani Ni Sisi</p>
-                    <p className="font-display text-lg italic text-muted-foreground">Peace Is Us</p>
-                  </div>
-                  <dl className="grid max-w-[15rem] gap-2 text-sm">
-                    <div className="flex justify-between gap-4 border-b border-dashed border-border pb-1.5">
-                      <dt className="text-muted-foreground">Written by</dt>
-                      <dd className="font-medium">?</dd>
-                    </div>
-                    <div className="flex justify-between gap-4 border-b border-dashed border-border pb-1.5">
-                      <dt className="text-muted-foreground">Recorded</dt>
-                      <dd>Harlem · Nairobi</dd>
-                    </div>
-                    <div className="flex justify-between gap-4">
-                      <dt className="text-muted-foreground">Split</dt>
-                      <dd className="font-mono text-xs">unsigned</dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-              <div className="absolute top-[150px] -left-2 rotate-[-8deg] lg:top-[170px]">
-                <Vinyl wanjiru={35} malik={65} size={250} label="Harlem draft" />
-              </div>
-              <div className="absolute top-[40px] right-[-10px] rotate-[6deg] lg:top-[30px]">
-                <Vinyl wanjiru={60} malik={40} size={230} label="Nairobi draft" />
-              </div>
-              <div className="absolute right-6 bottom-0 flex items-center gap-2 rounded-full border border-border bg-background/90 px-4 py-2 shadow-md backdrop-blur lg:bottom-4">
-                <span className="size-2 rounded-full bg-nairobi" />
-                <span className="text-sm">Wanjiru, Nairobi</span>
-                <span className="mx-1 text-muted-foreground">×</span>
-                <span className="size-2 rounded-full bg-harlem" />
-                <span className="text-sm">Malik, Harlem</span>
-              </div>
+          <div className="relative z-10 w-full px-6 pt-16 md:px-10 md:pt-24 lg:px-16 2xl:px-24">
+            <h1 className="animate-rise text-[clamp(3rem,7.2vw,6.4rem)] leading-[0.98] font-medium tracking-[-0.045em] text-foreground/85">
+              Two Memories.
+              <br />
+              <span className="text-nairobi">One</span> Agreement.
+            </h1>
+            <p className="animate-rise mt-7 max-w-[38rem] text-[1.2rem] leading-relaxed text-foreground/75 [animation-delay:90ms]">
+              Sawa helps co-writers settle who wrote what, fairly and on the
+              record, so the music they make together can be licensed and paid.
+            </p>
+            <div className="animate-rise mt-9 flex flex-wrap gap-4 [animation-delay:170ms]">
+              <Link
+                href={DEMO}
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "h-13 rounded-xl bg-nairobi px-7 text-[1.02rem] font-normal text-white shadow-sm hover:bg-nairobi/90"
+                )}
+              >
+                Try The Demo
+              </Link>
+              <a
+                href="#how"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "h-13 rounded-xl border-transparent bg-card px-7 text-[1.02rem] font-normal shadow-xs"
+                )}
+              >
+                See How It Works
+              </a>
             </div>
           </div>
-        </section>
 
-        {/* the problem, as a pull quote */}
-        <section className="border-y border-border/70 bg-paper-deep/60">
-          <div className="mx-auto grid max-w-[1320px] gap-10 px-5 py-16 md:px-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <p className="font-display text-3xl leading-tight font-[480] tracking-tight text-balance md:text-[2.6rem]">
-              When co-writers register different splits, the money is{" "}
-              <span className="font-display-wonk italic text-nairobi-ink">held until they agree.</span>
-            </p>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {[
-                ["US$424M", "historical unmatched US royalties handed to the MLC in 2021"],
-                ["KSh 75.7M", "under-distributed by one Kenyan collecting society, 2020 to 2022"],
-                ["10%", "what co-writers of Tyla's \"Water\" say they were offered"],
-              ].map(([num, text]) => (
-                <div key={num} className="border-t-2 border-ink pt-3">
-                  <p className="font-display tabular text-3xl font-[600] tracking-tight">{num}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
+          {/* landscape */}
+          <div className="relative -mt-4 h-[340px] md:-mt-10 md:h-[440px]">
+            <Rings className="absolute top-[6%] left-1/2 w-[300px] -translate-x-[6%] md:top-[-3%] md:w-[460px]" />
+            <HalftoneDunes className="absolute inset-0" />
+          </div>
+
+          {/* feature band */}
+          <div className="bg-ink">
+            <div className="grid w-full gap-10 px-6 pt-4 pb-20 sm:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-16 2xl:px-24">
+              {FEATURES.map(({ icon: Icon, title, body }) => (
+                <div key={title} className="flex gap-4">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-xl border border-nairobi/70 text-white">
+                    <Icon className="size-5" strokeWidth={1.8} />
+                  </span>
+                  <div>
+                    <p className="text-[1.1rem] font-medium text-white">
+                      {title}
+                    </p>
+                    <p className="mt-1.5 text-[0.95rem] leading-relaxed text-white/60">
+                      {body}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* how */}
-        <section id="how" className="mx-auto max-w-[1320px] scroll-mt-20 px-5 py-20 md:px-8">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <h2 className="font-display text-4xl font-[520] tracking-tight md:text-5xl">How Sawa Works</h2>
-            <p className="max-w-md text-muted-foreground">
-              Jev reads. Omega decides. The writers confirm, contest and sign.
+        {/* the problem */}
+        <section
+          id="artists"
+          className="w-full scroll-mt-20 px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
+        >
+          <div className="grid gap-14 lg:grid-cols-[1.1fr_1fr] lg:items-end">
+            <div>
+              <p className="eyebrow text-nairobi-ink">The problem</p>
+              <h2 className="mt-4 text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
+                When co-writers remember it differently, the money stops.
+              </h2>
+            </div>
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              A producer in Harlem and a singer in Nairobi make a song over
+              WhatsApp. Weeks later, someone wants to license it, and each of
+              them remembers a different split. Until they agree, collecting
+              societies hold the royalties and licensing platforms can&apos;t
+              pay anyone.
             </p>
           </div>
-          <ol className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
-            {steps.map(({ n, title, body, icon: Icon }) => (
-              <li key={n} className="group relative bg-card p-8 transition-colors hover:bg-background">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs tracking-[0.2em] text-muted-foreground">{n}</span>
-                  <Icon className="size-5 text-muted-foreground transition-colors group-hover:text-foreground" />
-                </div>
-                <h3 className="font-display mt-10 text-3xl font-[560] tracking-tight">{title}</h3>
-                <p className="mt-3 leading-relaxed text-muted-foreground">{body}</p>
-              </li>
+          <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+            {[
+              [
+                "$424M",
+                "in unmatched US streaming royalties handed to the Mechanical Licensing Collective in 2021",
+              ],
+              [
+                "KSh 75.7M",
+                "under-distributed by one Kenyan collecting society between 2020 and 2022",
+              ],
+              [
+                "10%",
+                'what co-writers of Tyla\'s hit "Water" say they were offered for their work',
+              ],
+            ].map(([num, text]) => (
+              <div key={num} className="bg-card p-8">
+                <p className="tabular text-4xl font-medium tracking-[-0.04em]">
+                  {num}
+                </p>
+                <p className="mt-3 leading-relaxed text-muted-foreground">
+                  {text}
+                </p>
+              </div>
             ))}
-          </ol>
+          </div>
         </section>
 
-        {/* why omega */}
-        <section className="mx-auto max-w-[1320px] px-5 pb-20 md:px-8">
-          <div className="grid gap-8 overflow-hidden rounded-[1.6rem] bg-ink p-8 text-paper md:p-12 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="flex flex-col justify-between gap-8">
+        {/* how it works */}
+        <section
+          id="how"
+          className="scroll-mt-20 border-y border-border bg-card"
+        >
+          <div className="w-full px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
-                <p className="font-mono text-[0.7rem] tracking-[0.18em] text-paper/60 uppercase">Why Omega</p>
-                <h2 className="font-display mt-4 text-4xl leading-tight font-[500] tracking-tight">
-                  A split is a disagreement about facts. Omega was built to reason through those.
+                <p className="eyebrow text-nairobi-ink">How it works</p>
+                <h2 className="mt-4 max-w-2xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
+                  From two stories to one signed split sheet.
                 </h2>
               </div>
-              <ul className="grid gap-3 text-paper/80">
-                {[
-                  [ScanSearch, "Defeaters: a MIDI made after receiving a voice memo counts as development."],
-                  [GitMerge, "NAL revision merges independent evidence into one truth value."],
-                  [ShieldCheck, "Omega's act threshold decides what is settled enough to sign."],
-                  [Languages, "Every sentence in English and Swahili, filled only from the proof."],
-                ].map(([Icon, text], i) => {
-                  const I = Icon as typeof ScanSearch
-                  return (
-                    <li key={i} className="flex gap-3">
-                      <I className="mt-0.5 size-4 shrink-0 text-gold" />
-                      <span>{text as string}</span>
-                    </li>
-                  )
-                })}
-              </ul>
+              <Link
+                href={DEMO}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "h-12 rounded-xl px-6 text-base font-normal"
+                )}
+              >
+                Walk Through The Demo <ArrowRight data-icon="inline-end" />
+              </Link>
             </div>
-            <pre className="overflow-x-auto rounded-xl border border-paper/10 bg-black/30 p-6 font-mono text-[0.8rem] leading-relaxed text-paper/85">
-              <code>{RULE}</code>
-            </pre>
+            <ol className="mt-16 grid gap-6 md:grid-cols-3">
+              {STEPS.map((s) => (
+                <li
+                  key={s.n}
+                  className="rounded-2xl border border-border bg-background p-8"
+                >
+                  <span className="grid size-10 place-items-center rounded-full bg-ink text-sm font-medium text-white">
+                    {s.n}
+                  </span>
+                  <h3 className="mt-8 text-2xl font-medium tracking-[-0.03em]">
+                    {s.title}
+                  </h3>
+                  <p className="mt-3 leading-relaxed text-muted-foreground">
+                    {s.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
-        {/* trust */}
-        <section className="mx-auto max-w-[1320px] px-5 pb-24 md:px-8">
-          <h2 className="font-display text-4xl font-[520] tracking-tight md:text-5xl">Would A Real Artist Trust This?</h2>
-          <div className="mt-10 grid gap-x-12 gap-y-8 md:grid-cols-2">
-            {trust.map(([fear, answer]) => (
-              <div key={fear} className="grid grid-cols-[auto_1fr] gap-4 border-t border-border pt-5">
-                <SawaMark size={18} className="mt-1" />
-                <div>
-                  <p className="font-display text-xl italic">&ldquo;{fear}&rdquo;</p>
-                  <p className="mt-2 leading-relaxed text-muted-foreground">{answer}</p>
-                </div>
-              </div>
-            ))}
+        {/* AI music */}
+        <section
+          id="ai"
+          className="w-full scroll-mt-20 px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
+        >
+          <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
+            <div>
+              <p className="eyebrow text-nairobi-ink">
+                Made for how music is made now
+              </p>
+              <h2 className="mt-4 text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
+                AI in the session. On the record.
+              </h2>
+              <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+                Producers generate drum loops. Singers lend their voice to a
+                model for a demo. Sawa keeps track of all of it, so the people
+                get the credit and the machine gets disclosed.
+              </p>
+            </div>
+            <ul className="grid gap-4">
+              {[
+                [
+                  AudioWaveform,
+                  "AI parts are disclosed, and owned by no one",
+                  "A generated groove is recorded with the tool and the prompt. No person gets a share for what the machine made.",
+                ],
+                [
+                  SlidersHorizontal,
+                  "You are credited for what you changed",
+                  "Rework a generated part and Sawa credits you for that work, nothing more and nothing less.",
+                ],
+                [
+                  MicVocal,
+                  "Voices need consent",
+                  "If a voice model of a singer was used, Sawa will not let anyone sign until that singer's consent is on the record.",
+                ],
+              ].map(([Icon, title, body]) => {
+                const I = Icon as typeof AudioWaveform
+                return (
+                  <li
+                    key={title as string}
+                    className="flex items-start gap-6 rounded-2xl border border-border bg-card p-7"
+                  >
+                    <I
+                      className="mt-0.5 size-9 shrink-0 text-foreground"
+                      strokeWidth={1.4}
+                      aria-hidden
+                    />
+                    <div>
+                      <p className="text-lg font-medium tracking-[-0.02em]">
+                        {title as string}
+                      </p>
+                      <p className="mt-1.5 leading-relaxed text-muted-foreground">
+                        {body as string}
+                      </p>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
-          <div className="mt-14 flex justify-center">
-            <Link href={SESSION} className={cn(buttonVariants({ size: "lg" }), "h-12 rounded-full px-7 text-base")}>
-              Open The Session <ArrowRight data-icon="inline-end" />
-            </Link>
+        </section>
+
+        {/* technology */}
+        <section id="omega" className="scroll-mt-20 bg-ink text-white">
+          <div className="grid w-full gap-14 px-6 py-24 md:px-10 md:py-32 lg:grid-cols-[1.1fr_1fr] lg:px-16 2xl:px-24">
+            <div>
+              <p className="text-[0.78rem] font-medium text-nairobi">
+                Technology
+              </p>
+              <h2 className="mt-4 text-[clamp(2.2rem,4.4vw,3.6rem)] leading-[1.05] font-medium tracking-[-0.04em]">
+                Built on SingularityNET Omega.
+              </h2>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/65">
+                Each writer&apos;s agent runs on Omega, an open agent framework
+                that remembers, reasons about uncertain evidence, and shows its
+                work. No chatbot decides who wrote what. The agents work it out
+                with logic you can inspect, and prove they agree.
+              </p>
+            </div>
+            <ul className="grid gap-px self-center overflow-hidden rounded-2xl border border-white/10 bg-white/10">
+              {[
+                [
+                  Users,
+                  "Two independent agents",
+                  "Each keeps its own memory. Neither can see the other's evidence until it is shared.",
+                ],
+                [
+                  ShieldCheck,
+                  "Same evidence, same answer",
+                  "Both agents compute the split separately. A matching agreement ID proves they reached the same result.",
+                ],
+                [
+                  BadgeCheck,
+                  "Every number has a reason",
+                  "Each share traces back to the files and messages behind it, with how sure the agents are.",
+                ],
+              ].map(([Icon, title, body]) => {
+                const I = Icon as typeof Users
+                return (
+                  <li key={title as string} className="flex gap-4 bg-ink p-6">
+                    <I
+                      className="mt-0.5 size-5 shrink-0 text-nairobi"
+                      strokeWidth={1.8}
+                    />
+                    <div>
+                      <p className="font-medium">{title as string}</p>
+                      <p className="mt-1 leading-relaxed text-white/60">
+                        {body as string}
+                      </p>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
+        </section>
+
+        {/* CTA */}
+        <section className="w-full px-6 py-24 text-center md:px-10 md:py-32 lg:px-16 2xl:px-24">
+          <h2 className="mx-auto max-w-3xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
+            Settle the split before it settles you.
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
+            Follow Wanjiru and Malik as their agents work out who wrote
+            &ldquo;Amani Ni Sisi&rdquo;.
+          </p>
+          <Link
+            href={DEMO}
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "mt-9 h-13 rounded-xl bg-nairobi px-8 text-[1.02rem] font-normal text-white hover:bg-nairobi/90"
+            )}
+          >
+            Try The Demo
+          </Link>
         </section>
       </main>
       <SiteFooter />

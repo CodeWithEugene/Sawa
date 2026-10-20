@@ -1,9 +1,21 @@
 import type { AgentId, Lang, Song, TV, Writer } from "./types"
 
-export const WRITER_AGENT: Record<Writer, AgentId> = { wanjiru: "nairobi", malik: "harlem" }
-export const AGENT_WRITER: Record<AgentId, Writer> = { nairobi: "wanjiru", harlem: "malik" }
-export const FIRST: Record<Writer, string> = { wanjiru: "Wanjiru", malik: "Malik" }
-export const CITY: Record<AgentId, string> = { nairobi: "Nairobi", harlem: "Harlem" }
+export const WRITER_AGENT: Record<Writer, AgentId> = {
+  wanjiru: "nairobi",
+  malik: "harlem",
+}
+export const AGENT_WRITER: Record<AgentId, Writer> = {
+  nairobi: "wanjiru",
+  harlem: "malik",
+}
+export const FIRST: Record<Writer, string> = {
+  wanjiru: "Wanjiru",
+  malik: "Malik",
+}
+export const CITY: Record<AgentId, string> = {
+  nairobi: "Nairobi",
+  harlem: "Harlem",
+}
 
 export function fmtTV(tv: TV): string {
   return `(stv ${tv[0].toFixed(2)} ${tv[1].toFixed(2)})`
@@ -67,7 +79,10 @@ export function claimWord(letter: string, lang: Lang): string {
 }
 
 /** "Wanjiru started it", "Both wrote it together", "Wanjiru started it, Malik developed it". */
-export function accountText(claimed: Record<string, string>, lang: Lang): string {
+export function accountText(
+  claimed: Record<string, string>,
+  lang: Lang
+): string {
   const ws = (["wanjiru", "malik"] as const).filter((w) => claimed[w] !== "-")
   if (ws.length === 2 && claimed.wanjiru === "o" && claimed.malik === "o") {
     return lang === "en" ? "both wrote it together" : "waliiandika pamoja"

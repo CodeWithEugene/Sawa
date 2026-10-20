@@ -55,7 +55,15 @@ export interface ProofBody {
   lib_nal_sha256?: string
   elements: ElementRow[]
   totals: Record<Writer, number | null>
-  withdrawn?: { id: string; record: string; element: string; role: string; writer: Writer; pol: string; kind: string }[]
+  withdrawn?: {
+    id: string
+    record: string
+    element: string
+    role: string
+    writer: Writer
+    pol: string
+    kind: string
+  }[]
   contests?: { record: string; by: Writer; reason: string }[]
 }
 
@@ -167,7 +175,13 @@ export interface Song {
   made: string
   campaign: string
   writers: Writer[]
-  elements: { id: string; weight: number; right: string; en: string; sw: string }[]
+  elements: {
+    id: string
+    weight: number
+    right: string
+    en: string
+    sw: string
+  }[]
   records: SongRecord[]
   policy: {
     id: string
@@ -178,7 +192,10 @@ export interface Song {
     master_note_sw: string
   }
   stems: { file: string; hash: string }[]
-  writer_info: Record<Writer, { name: string; city: string; role: string; agent: AgentId; lang: Lang }>
+  writer_info: Record<
+    Writer,
+    { name: string; city: string; role: string; agent: AgentId; lang: Lang }
+  >
 }
 
 export interface JevReading {

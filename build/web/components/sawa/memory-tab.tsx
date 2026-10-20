@@ -8,18 +8,31 @@ import { cn } from "@/lib/utils"
 function describe(e: MemoryEntry, lang: Lang): { kind: string; text: string } {
   switch (e.type) {
     case "record":
-      return { kind: e.kind ?? "record", text: `${e.record} (${FIRST[e.author ?? "malik"]})` }
+      return {
+        kind: e.kind ?? "record",
+        text: `${e.record} (${FIRST[e.author ?? "malik"]})`,
+      }
     case "exchange":
       return {
         kind: "exchange",
-        text: lang === "en"
-          ? `Received ${e.received?.length ?? 0} records from the other agent: ${e.received?.join(", ")}`
-          : `Imepokea rekodi ${e.received?.length ?? 0} kutoka kwa wakala mwingine: ${e.received?.join(", ")}`,
+        text:
+          lang === "en"
+            ? `Received ${e.received?.length ?? 0} records from the other agent: ${e.received?.join(", ")}`
+            : `Imepokea rekodi ${e.received?.length ?? 0} kutoka kwa wakala mwingine: ${e.received?.join(", ")}`,
       }
     case "reconcile":
-      return { kind: "reconcile", text: lang === "en" ? "Reconciled on its own atom space" : "Imepatanisha kwenye nafasi yake ya atomu" }
+      return {
+        kind: "reconcile",
+        text:
+          lang === "en"
+            ? "Reconciled on its own atom space"
+            : "Imepatanisha kwenye nafasi yake ya atomu",
+      }
     case "contest":
-      return { kind: "contest", text: `${FIRST[e.by ?? "malik"]} withdrew ${e.record}: "${e.reason}"` }
+      return {
+        kind: "contest",
+        text: `${FIRST[e.by ?? "malik"]} withdrew ${e.record}: "${e.reason}"`,
+      }
     case "withdraw-contest":
       return { kind: "restore", text: `${e.record} restored` }
     case "sign":
@@ -37,19 +50,42 @@ function Column({ agent }: { agent: AgentId }) {
   const log = state.agents[agent].memory
   return (
     <section className="rounded-2xl border border-border bg-card">
-      <header className={cn("flex items-center justify-between rounded-t-2xl px-5 py-3", agent === "nairobi" ? "bg-nairobi-soft" : "bg-harlem-soft")}>
+      <header
+        className={cn(
+          "flex items-center justify-between rounded-t-2xl px-5 py-3",
+          agent === "nairobi" ? "bg-nairobi-soft" : "bg-harlem-soft"
+        )}
+      >
         <p className="font-display text-lg font-[560]">
-          {CITY[agent]} {lang === "en" ? "Agent" : "Wakala"} · {FIRST[AGENT_WRITER[agent]]}
+          {CITY[agent]} {lang === "en" ? "Agent" : "Wakala"} ·{" "}
+          {FIRST[AGENT_WRITER[agent]]}
         </p>
-        <span className="font-mono text-xs text-muted-foreground">{log.length} {lang === "en" ? "entries" : "maingizo"}</span>
+        <span className="font-mono text-xs text-muted-foreground">
+          {log.length} {lang === "en" ? "entries" : "maingizo"}
+        </span>
       </header>
-      <ol className="divide-y divide-dashed divide-border font-mono text-[0.78rem]" data-testid={`memory-${agent}`}>
+      <ol
+        className="divide-y divide-dashed divide-border font-mono text-[0.78rem]"
+        data-testid={`memory-${agent}`}
+      >
         {log.map((e, i) => {
           const d = describe(e, lang)
           return (
-            <li key={i} className="grid grid-cols-[2.2rem_6.5rem_1fr] gap-2 px-5 py-2">
-              <span className="text-muted-foreground tabular">{String(i + 1).padStart(2, "0")}</span>
-              <span className={cn("truncate", d.kind === "contest" && "text-destructive", d.kind === "exchange" && "text-truth-ink", d.kind === "sign" && "text-truth-ink")}>
+            <li
+              key={i}
+              className="grid grid-cols-[2.2rem_6.5rem_1fr] gap-2 px-5 py-2"
+            >
+              <span className="tabular text-muted-foreground">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span
+                className={cn(
+                  "truncate",
+                  d.kind === "contest" && "text-destructive",
+                  d.kind === "exchange" && "text-truth-ink",
+                  d.kind === "sign" && "text-truth-ink"
+                )}
+              >
                 {d.kind}
               </span>
               <span className="min-w-0 break-words text-foreground/85">

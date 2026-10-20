@@ -21,7 +21,16 @@ export const api = {
       body: JSON.stringify({ song_id: songId, events }),
     }),
   jev: (record: string) =>
-    call<JevReading>("/api/jev/read", { method: "POST", body: JSON.stringify({ record }) }),
+    call<JevReading>("/api/jev/read", {
+      method: "POST",
+      body: JSON.stringify({ record }),
+    }),
   health: () =>
-    call<{ ok: boolean; omega: string; hyperon: string; lib_nal_sha256: string; jev: boolean }>("/api/health"),
+    call<{
+      ok: boolean
+      omega: string
+      hyperon: string
+      lib_nal_sha256: string
+      jev: boolean
+    }>("/api/health"),
 }

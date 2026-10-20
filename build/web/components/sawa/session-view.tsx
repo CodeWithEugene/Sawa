@@ -31,8 +31,16 @@ function Stepper() {
   const phase = state?.phase ?? "solo"
   const steps = [
     { key: "disagree", label: t(lang, "disagree"), done: phase !== "solo" },
-    { key: "exchange", label: t(lang, "exchange"), done: phase === "reconciled" },
-    { key: "reconcile", label: t(lang, "reconcile"), done: phase === "reconciled" && !!state?.converged },
+    {
+      key: "exchange",
+      label: t(lang, "exchange"),
+      done: phase === "reconciled",
+    },
+    {
+      key: "reconcile",
+      label: t(lang, "reconcile"),
+      done: phase === "reconciled" && !!state?.converged,
+    },
     { key: "sign", label: t(lang, "sign"), done: signed },
   ]
   const current = steps.findIndex((s) => !s.done)
@@ -40,7 +48,14 @@ function Stepper() {
     <ol className="hidden items-center gap-1 md:flex" aria-label="Progress">
       {steps.map((s, i) => (
         <li key={s.key} className="flex items-center gap-1">
-          {i > 0 && <span className={cn("h-px w-5", s.done || i <= current ? "bg-ink/40" : "bg-border")} />}
+          {i > 0 && (
+            <span
+              className={cn(
+                "h-px w-5",
+                s.done || i <= current ? "bg-ink/40" : "bg-border"
+              )}
+            />
+          )}
           <span
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-colors",
@@ -50,7 +65,11 @@ function Stepper() {
             )}
             aria-current={i === current ? "step" : undefined}
           >
-            {s.done ? <Check className="size-3" /> : <span className="font-mono">{i + 1}</span>}
+            {s.done ? (
+              <Check className="size-3" />
+            ) : (
+              <span className="font-mono">{i + 1}</span>
+            )}
             {s.label}
           </span>
         </li>
@@ -62,14 +81,23 @@ function Stepper() {
 function LangToggle() {
   const { lang, setLang } = useSession()
   return (
-    <div className="flex rounded-full border border-border bg-card p-0.5 text-xs font-medium" role="group" aria-label="Language">
+    <div
+      className="flex rounded-full border border-border bg-card p-0.5 text-xs font-medium"
+      role="group"
+      aria-label="Language"
+    >
       {(["en", "sw"] as Lang[]).map((l) => (
         <button
           key={l}
           type="button"
           onClick={() => setLang(l)}
           data-testid={`lang-${l}`}
-          className={cn("rounded-full px-3 py-1 transition-colors", lang === l ? "bg-ink text-paper" : "text-muted-foreground hover:text-foreground")}
+          className={cn(
+            "rounded-full px-3 py-1 transition-colors",
+            lang === l
+              ? "bg-ink text-paper"
+              : "text-muted-foreground hover:text-foreground"
+          )}
           aria-pressed={lang === l}
         >
           {l === "en" ? "English" : "Kiswahili"}
@@ -84,18 +112,35 @@ function SessionMenu() {
   const mismatch = state?.agents.nairobi.pack === "split-v0"
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Session options"><Settings2 /></Button>} />
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" size="icon-sm" aria-label="Session options">
+            <Settings2 />
+          </Button>
+        }
+      />
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>{lang === "en" ? "Session" : "Kikao"}</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {lang === "en" ? "Session" : "Kikao"}
+          </DropdownMenuLabel>
           <DropdownMenuItem onClick={() => void reset()} disabled={!!busy}>
             <RotateCcw /> {t(lang, "reset")}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => void setPack("nairobi", mismatch ? "split-v1" : "split-v0")} disabled={!!busy}>
+          <DropdownMenuItem
+            onClick={() =>
+              void setPack("nairobi", mismatch ? "split-v1" : "split-v0")
+            }
+            disabled={!!busy}
+          >
             <AlertTriangle />
             {mismatch
-              ? lang === "en" ? "Restore Nairobi To split-v1" : "Rejesha Nairobi Kwa split-v1"
-              : lang === "en" ? "Run Nairobi On Old Rules (v0)" : "Endesha Nairobi Kwa Sheria Za Zamani"}
+              ? lang === "en"
+                ? "Restore Nairobi To split-v1"
+                : "Rejesha Nairobi Kwa split-v1"
+              : lang === "en"
+                ? "Run Nairobi On Old Rules (v0)"
+                : "Endesha Nairobi Kwa Sheria Za Zamani"}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
@@ -110,7 +155,9 @@ export function SessionView() {
 
   function openSheet() {
     setTab("sheet")
-    requestAnimationFrame(() => tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }))
+    requestAnimationFrame(() =>
+      tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    )
   }
 
   return (
@@ -120,15 +167,17 @@ export function SessionView() {
         <LangToggle />
         <SessionMenu />
       </SiteHeader>
-      <main className="mx-auto max-w-[1320px] px-5 pt-8 pb-24 md:px-8">
+      <main className="w-full px-6 pt-8 pb-24 md:px-10 lg:px-16 2xl:px-24">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">{song?.campaign ?? "Synthetic data"} · {t(lang, "synthetic")}</p>
-            <h1 className="font-display mt-2 text-5xl leading-none font-[540] tracking-[-0.03em] md:text-6xl">
+            <p className="eyebrow">
+              {song?.campaign ?? "Synthetic data"} · {t(lang, "synthetic")}
+            </p>
+            <h1 className="mt-2 font-display text-5xl leading-none font-[540] tracking-[-0.03em] md:text-6xl">
               {song ? song.title : <Skeleton className="h-12 w-72" />}
             </h1>
             {song && (
-              <p className="font-display mt-1 text-lg text-muted-foreground italic">
+              <p className="mt-1 font-display text-lg text-muted-foreground italic">
                 {song.subtitle} · {song.bpm} BPM · {song.key} · {song.made}
               </p>
             )}
@@ -141,8 +190,13 @@ export function SessionView() {
         </div>
 
         {error && (
-          <div className="mb-6 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive" role="alert">
-            {lang === "en" ? "The agents could not be reached. " : "Mawakala hawakupatikana. "}
+          <div
+            className="mb-6 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
+            role="alert"
+          >
+            {lang === "en"
+              ? "The agents could not be reached. "
+              : "Mawakala hawakupatikana. "}
             <span className="font-mono text-xs">{error}</span>
           </div>
         )}
@@ -166,12 +220,22 @@ export function SessionView() {
                 ["record", t(lang, "sign")],
                 ["memory", t(lang, "agentMemory")],
               ].map(([v, label]) => (
-                <TabsTrigger key={v} value={v} className="rounded-full px-4 data-active:bg-card data-active:shadow-sm" data-testid={`tab-${v}`}>
+                <TabsTrigger
+                  key={v}
+                  value={v}
+                  className="rounded-full px-4 data-active:bg-card data-active:shadow-sm"
+                  data-testid={`tab-${v}`}
+                >
                   {label}
                 </TabsTrigger>
               ))}
             </TabsList>
-            <TabsContent value="sheet" className={cn(busy === "contest" && "opacity-60 transition-opacity")}>
+            <TabsContent
+              value="sheet"
+              className={cn(
+                busy === "contest" && "opacity-60 transition-opacity"
+              )}
+            >
               <SplitSheet />
             </TabsContent>
             <TabsContent value="evidence">
