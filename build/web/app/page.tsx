@@ -99,18 +99,17 @@ function Rings({ className }: { className?: string }) {
 export default function Home() {
   return (
     <>
+      <SiteHeader nav>
+        <Link
+          href={DEMO}
+          className="text-[1.05rem] text-foreground/85 transition-colors hover:text-foreground"
+        >
+          Try The Demo
+        </Link>
+      </SiteHeader>
       <main>
         {/* hero: one screen, like a poster */}
-        <section className="relative flex min-h-svh flex-col overflow-hidden">
-          <SiteHeader nav className="static bg-transparent backdrop-blur-none">
-            <Link
-              href={DEMO}
-              className="text-[1.05rem] text-foreground/85 transition-colors hover:text-foreground"
-            >
-              Try The Demo
-            </Link>
-          </SiteHeader>
-
+        <section className="relative flex min-h-[calc(100svh-72px)] flex-col overflow-hidden">
           <div className="relative z-10 grid w-full items-center gap-10 px-6 pt-10 md:px-10 md:pt-16 lg:grid-cols-[1fr_auto] lg:px-16 2xl:px-24">
             <div>
               <h1 className="animate-rise text-[clamp(2.9rem,6.3vw,6.6rem)] leading-[1.02] font-medium tracking-[-0.045em] text-[#3a3a3c]">
@@ -165,11 +164,13 @@ export default function Home() {
         {/* the problem */}
         <section
           id="artists"
-          className="w-full scroll-mt-20 bg-nairobi text-white px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
+          className="w-full scroll-mt-20 bg-nairobi px-6 py-24 text-white md:px-10 md:py-32 lg:px-16 2xl:px-24"
         >
           <div className="grid gap-14 lg:grid-cols-[1.1fr_1fr] lg:items-end">
             <div>
-              <p className="text-[0.78rem] font-medium text-white/80">The problem</p>
+              <p className="text-[0.78rem] font-medium text-white/80">
+                The problem
+              </p>
               <h2 className="mt-4 text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
                 When co-writers remember it differently, the money stops.
               </h2>
@@ -201,23 +202,20 @@ export default function Home() {
                 <p className="tabular text-4xl font-medium tracking-[-0.04em]">
                   {num}
                 </p>
-                <p className="mt-3 leading-relaxed text-white/65">
-                  {text}
-                </p>
+                <p className="mt-3 leading-relaxed text-white/65">{text}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* how it works */}
-        <section
-          id="how"
-          className="scroll-mt-20 bg-ink text-white"
-        >
+        <section id="how" className="scroll-mt-20 bg-ink text-white">
           <div className="w-full px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
-                <p className="text-[0.78rem] font-medium text-nairobi">How it works</p>
+                <p className="text-[0.78rem] font-medium text-nairobi">
+                  How it works
+                </p>
                 <h2 className="mt-4 max-w-2xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
                   From two stories to one signed split sheet.
                 </h2>
@@ -234,19 +232,14 @@ export default function Home() {
             </div>
             <ol className="mt-16 grid gap-6 md:grid-cols-3">
               {STEPS.map((s) => (
-                <li
-                  key={s.n}
-                  className="rounded-2xl bg-nairobi p-8 text-white"
-                >
+                <li key={s.n} className="rounded-2xl bg-nairobi p-8 text-white">
                   <span className="grid size-10 place-items-center rounded-full bg-white text-sm font-medium text-nairobi-ink">
                     {s.n}
                   </span>
                   <h3 className="mt-8 text-2xl font-medium tracking-[-0.03em]">
                     {s.title}
                   </h3>
-                  <p className="mt-3 leading-relaxed text-white/85">
-                    {s.body}
-                  </p>
+                  <p className="mt-3 leading-relaxed text-white/85">{s.body}</p>
                 </li>
               ))}
             </ol>
@@ -256,7 +249,7 @@ export default function Home() {
         {/* AI music */}
         <section
           id="ai"
-          className="w-full scroll-mt-20 bg-nairobi text-white px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
+          className="w-full scroll-mt-20 bg-nairobi px-6 py-24 text-white md:px-10 md:py-32 lg:px-16 2xl:px-24"
         >
           <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
             <div>
@@ -379,14 +372,29 @@ export default function Home() {
               aria-hidden
               className="pointer-events-none absolute -top-16 -right-20 w-[360px] opacity-30 md:w-[480px]"
             >
-              <circle cx="180" cy="150" r="128" fill="none" stroke="var(--nairobi)" strokeWidth="14" />
-              <circle cx="300" cy="150" r="128" fill="none" stroke="var(--harlem)" strokeWidth="14" />
+              <circle
+                cx="180"
+                cy="150"
+                r="128"
+                fill="none"
+                stroke="var(--nairobi)"
+                strokeWidth="14"
+              />
+              <circle
+                cx="300"
+                cy="150"
+                r="128"
+                fill="none"
+                stroke="var(--harlem)"
+                strokeWidth="14"
+              />
             </svg>
             <h2 className="relative mx-auto max-w-3xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
               Settle the split before it settles you.
             </h2>
             <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/70">
-              Follow Wanjiru and Malik as their agents work out who wrote &ldquo;Amani Ni Sisi&rdquo;.
+              Follow Wanjiru and Malik as their agents work out who wrote
+              &ldquo;Amani Ni Sisi&rdquo;.
             </p>
             <Link
               href={DEMO}
