@@ -372,11 +372,11 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section className="w-full px-6 py-24 text-center md:px-10 md:py-32 lg:px-16 2xl:px-24">
+        <section className="w-full bg-nairobi px-6 py-24 text-center text-white md:px-10 md:py-32 lg:px-16 2xl:px-24">
           <h2 className="mx-auto max-w-3xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
             Settle the split before it settles you.
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-5 max-w-xl text-lg text-white/85">
             Follow Wanjiru and Malik as their agents work out who wrote
             &ldquo;Amani Ni Sisi&rdquo;.
           </p>
@@ -384,7 +384,7 @@ export default function Home() {
             href={DEMO}
             className={cn(
               buttonVariants({ size: "lg" }),
-              "mt-9 h-13 rounded-xl bg-nairobi px-8 text-[1.02rem] font-normal text-white hover:bg-nairobi/90"
+              "mt-9 h-13 rounded-xl bg-ink px-8 text-[1.02rem] font-normal text-white hover:bg-ink/85"
             )}
           >
             Try The Demo
