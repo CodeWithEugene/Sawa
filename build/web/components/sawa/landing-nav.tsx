@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { SawaMark } from "./brand"
+import { DEMO_HREF } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 type Tone = "light" | "dark" | "orange"
@@ -25,7 +26,6 @@ const HOME_SECTIONS: Record<string, string> = {
   omega: "/technology",
 }
 
-export const DEMO_HREF = "/session/amani-ni-sisi"
 const HEIGHT = 56
 
 /**

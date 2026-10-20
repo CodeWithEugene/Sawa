@@ -3,7 +3,9 @@
 import * as React from "react"
 import { AlertTriangle, Check, RotateCcw, Settings2 } from "lucide-react"
 
+import { DemoGuide } from "./demo-guide"
 import { EvidenceTab } from "./evidence-tab"
+import { SiteFooterFull } from "./page-kit"
 import { MemoryTab } from "./memory-tab"
 import { RecordTab } from "./record-tab"
 import { useSession } from "./session-provider"
@@ -202,7 +204,10 @@ export function SessionView() {
         )}
 
         {state ? (
-          <Stage onOpenSheet={openSheet} />
+          <>
+            <DemoGuide />
+            <Stage onOpenSheet={openSheet} />
+          </>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[330px_1fr_330px]">
             <Skeleton className="h-[440px] rounded-[1.4rem]" />
@@ -250,6 +255,7 @@ export function SessionView() {
           </Tabs>
         </div>
       </main>
+      <SiteFooterFull />
     </>
   )
 }

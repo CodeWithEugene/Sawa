@@ -14,8 +14,8 @@ import {
 } from "lucide-react"
 
 import { HalftoneDunes } from "@/components/sawa/halftone-dunes"
-import { LandingNav } from "@/components/sawa/landing-nav"
-import { SiteFooter } from "@/components/sawa/site-header"
+import { SiteNav } from "@/components/sawa/landing-nav"
+import { SiteFooterFull } from "@/components/sawa/page-kit"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -100,7 +100,7 @@ function Rings({ className }: { className?: string }) {
 export default function Home() {
   return (
     <>
-      <LandingNav demoHref={DEMO} />
+      <SiteNav />
       <main>
         {/* hero: one screen, like a poster */}
         <section
@@ -425,7 +425,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <SiteFooter />
+      <SiteFooterFull />
     </>
   )
 }

@@ -2,7 +2,7 @@
 
 > **What this file is.** The engineering plan: scope, the demo script that drives the build, architecture, the MeTTa atoms and rules, the API, the screens, data, tests, deployment and the time plan. Product reasoning is in [solution.md](solution.md).
 >
-> **Status:** v1.0 for review, Tuesday 20 October 2026, about 12:45 EAT. **Nothing in `build/` exists yet.** All code goes in `build/` after Eugene approves these docs.
+> **Status:** v1.1, as built (20 October 2026, 14:30 EAT). Everything in sections 1.1 and 1.2 is built, tested (22 backend tests) and deployed at https://sawa.codewitheugene.top. Changes since v1.0: the split policy is now beat 50 / topline 50 (section 6.5 numbers superseded, see solution.md section 6.2); AI-generated parts, defeater D3 and voice consent were added (solution.md section 16); the hero numbers are now Wanjiru 39.7 / Malik 60.3; the web app became a full product site (docs/user-journeys.md); the video is narrated in Eugene's own cloned voice (KittenTTS 2) instead of a stock TTS voice.
 
 ---
 

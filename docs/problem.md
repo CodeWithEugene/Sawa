@@ -188,7 +188,7 @@ Caveat: a model scoring paragraphs is a sanity check, not the decision.
 3. **It hits the organisers' most repeated phrase** (split sheets, who is owed what, splits first, signed in the session) and XRAgency's own stated principle.
 4. **Omega is essential, not decorative.** Revision, defeaters, thresholds and memory are exactly the tools a disagreement needs.
 5. **It answers the track's trust question directly** ([solution.md](solution.md) section 8).
-6. **It is concrete on video.** Two drafts, 65 / 35 against 60 / 40, become one 50 / 50 with two equal hashes; a contest is recorded and the answer holds for a reason you can read.
+6. **It is concrete on video.** Two versions (Malik's gives him 77.5%, Wanjiru's gives her 40%) become one answer, Wanjiru 39.7 / Malik 60.3, with two equal agreement IDs, and AI-generated drums disclosed and owned by no one; a contest is recorded and the answer holds for a reason you can read.
 7. **It is incubatable.** Incantio and BASIX both need signed splits before they can list or pay.
 8. **It is buildable tonight**, because the reasoning engine is proven.
 

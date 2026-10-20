@@ -1,7 +1,8 @@
 import Link from "next/link"
 
 import { SawaMark } from "./brand"
-import { DEMO_HREF, SiteNav } from "./landing-nav"
+import { SiteNav } from "./landing-nav"
+import { DEMO_HREF } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 /**
@@ -49,10 +50,12 @@ export function PageHero({
   aside?: React.ReactNode
 }) {
   const parts = accent ? title.split(accent) : [title]
+  // Without anything on the right, the hero is centred.
+  const centred = !aside
   return (
     <section data-nav={tone} className={cn(TONE_BG[tone], "w-full", PAD, "pt-20 pb-20 md:pt-28 md:pb-24")}>
       <div className={cn("grid items-center gap-14", aside && "lg:grid-cols-[1.15fr_1fr]")}>
-        <div>
+        <div className={cn(centred && "mx-auto flex max-w-5xl flex-col items-center text-center")}>
           <p className={cn("text-sm font-medium", tone === "light" ? "text-nairobi-ink" : "text-white/80")}>{eyebrow}</p>
           <h1 className="mt-4 max-w-4xl text-[clamp(2.6rem,5.6vw,5.4rem)] leading-[1.02] font-medium tracking-[-0.045em]">
             {accent ? (
@@ -68,7 +71,7 @@ export function PageHero({
           <p className={cn("mt-6 max-w-2xl text-[1.2rem] leading-relaxed", tone === "light" ? "text-foreground/75" : "text-white/80")}>
             {lead}
           </p>
-          {actions && <div className="mt-9 flex flex-wrap gap-4">{actions}</div>}
+          {actions && <div className={cn("mt-9 flex flex-wrap gap-4", centred && "justify-center")}>{actions}</div>}
         </div>
         {aside && <div>{aside}</div>}
       </div>
@@ -96,7 +99,7 @@ export function Section({
   return (
     <section id={id} data-nav={tone} className={cn(TONE_BG[tone], "w-full scroll-mt-14", PAD, "py-20 md:py-28", className)}>
       {(eyebrow || title || lead) && (
-        <div className="mb-12 max-w-3xl">
+        <div className="mx-auto mb-14 max-w-3xl text-center">
           {eyebrow && (
             <p className={cn("text-sm font-medium", tone === "light" ? "text-nairobi-ink" : tone === "dark" ? "text-nairobi" : "text-white/80")}>
               {eyebrow}
@@ -169,7 +172,7 @@ export function SecondaryButton({ href, children, onColor }: { href: string; chi
 
 /** Closing call to action: an ink card on an orange band. */
 export function CtaBand({
-  title = "See it settle a real split.",
+  title = "See It Settle A Real Split.",
   lead = "Follow Wanjiru and Malik as their agents work out who wrote “Amani Ni Sisi”.",
   href = DEMO_HREF,
   label = "Try The Demo",
