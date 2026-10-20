@@ -68,10 +68,14 @@ def evidence_items(record: dict, writers: list[str], elements: list[str]) -> lis
                               element=credit["element"], role=credit["role"],
                               writer=credit["writer"], pol="pos"))
     elif kind == "claim":
+        # An account asserts who started each part (and denies it for the
+        # others), and who developed it. It does not deny development.
         for el in elements:
             for w in writers:
                 claimed = record["roles"][el][w]
                 for role, letter in ROLE_LETTER.items():
+                    if role == "developed" and claimed != letter:
+                        continue
                     items.append(dict(
                         id=f"{rid}--{el}--{w}--{letter}", record=rid, kind="recollection",
                         author=author, at=at, element=el, role=role, writer=w,

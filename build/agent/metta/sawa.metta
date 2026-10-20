@@ -124,9 +124,7 @@
        (if (and (>= $f 0.3) (>= $c 0.2)) needs-confirmation unsupported)))
 
 (= (settled? $role $el $w)
-   (exists (collapse
-     (match &self (stmt $role $el $w $tv)
-       (if (== (band $tv) settled) yes (empty))))))
+   (exists (collapse (match &self (stmt-band $role $el $w settled) yes))))
 
 ;; ----------------------------------------------------------------
 ;; Resolution and shares, from the writers' agreed policy atoms.
@@ -150,31 +148,40 @@
 (= (weight $el)
    (match &self (active-pack $p) (match &self (weight $p $el $v) $v)))
 
-;; Share (percent of the element) for writer $w.
+;; Share (percent of the element) for writer $w, given the element's
+;; originators $os and developers $ds (plain recursion, no let*: it is
+;; markedly faster on hyperon).
 (= (element-share $el $w $os $ds)
-   (let* (($no (size-atom $os))
-          ($nd (size-atom $ds)))
-     (if (== $no 0)
-         blocked
-         (if (is-member $w $os)
-             (if (== $nd 0)
-                 (/ 100.0 $no)
-                 (/ (policy origination) $no))
-             (if (is-member $w $ds)
-                 (/ (policy development) $nd)
-                 0.0)))))
+   (share-by-count $w $os $ds (size-atom $os) (size-atom $ds)))
+
+(= (share-by-count $w $os $ds $no $nd)
+   (if (== $no 0)
+       blocked
+       (if (is-member $w $os)
+           (if (== $nd 0) (/ 100.0 $no) (/ (policy origination) $no))
+           (if (is-member $w $ds) (/ (policy development) $nd) 0.0))))
 
 (= (is-member $x $list)
    (if (== $list ()) False
        (if (== (car-atom $list) $x) True (is-member $x (cdr-atom $list)))))
 
+(= (shares-for $el $os $ds $ws)
+   (if (== $ws ())
+       ()
+       (let $w (car-atom $ws)
+         (let $share (element-share $el $w $os $ds)
+           (let $rest (shares-for $el $os $ds (cdr-atom $ws))
+             (cons-atom ($w $share) $rest))))))
+
+(= (resolve-with $el $os $ds)
+   (let $weight (weight $el)
+     (let $shares (shares-for $el $os $ds (writers))
+       (resolved $el $weight $os $ds $shares))))
+
 ;; Resolve one element: (resolved el weight (originators) (developers) ((w share) ...))
 (= (resolve $el)
-   (let* (($os (originators $el))
-          ($ds (developers $el))
-          ($ws (writers))
-          ($shares (collapse (let $w (superpose $ws) ($w (element-share $el $w $os $ds))))))
-     (resolved $el (weight $el) $os $ds $shares)))
+   (let $os (originators $el)
+     (let $ds (developers $el) (resolve-with $el $os $ds))))
 
 (= (resolve-all)
    (match &self (element $el $right) (resolve $el)))

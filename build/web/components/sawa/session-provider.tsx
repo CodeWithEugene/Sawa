@@ -93,6 +93,12 @@ export function SessionProvider({ songId, children }: { songId: string; children
       .then((result) => {
         setEvents(initial)
         setState(result)
+        // Warm the agents: ask the API to reconcile in the background so the
+        // result is cached on the instance before anyone clicks Reconcile.
+        // Nothing from this call is shown.
+        if (result.phase !== "reconciled") {
+          api.run(songId, [{ type: "exchange" }, { type: "reconcile" }]).catch(() => undefined)
+        }
       })
       .catch((e: unknown) => setError(e instanceof Error ? e.message : "The agents could not be reached"))
       .finally(() => setBusy(null))

@@ -35,9 +35,9 @@ def proof_hash(body: dict) -> str:
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 
-def _resolve(engine: Engine) -> dict[str, dict]:
+def _resolve(engine: Engine, song: dict) -> dict[str, dict]:
     out: dict[str, dict] = {}
-    for res in engine.run("!(resolve-all)"):
+    for res in (r for el in [e[0] for e in song["elements"]] for r in engine.run(f"!(resolve {el})")):
         node = parse(res)
         _, el, weight, os_, ds, shares = node
         share_map: dict[str, float | None] = {}
@@ -75,9 +75,9 @@ def draft(song: dict, owner: str, pack: str) -> dict:
     for el, roles in claim["roles"].items():
         for w, letter in roles.items():
             for role in ROLES:
-                f = 1.0 if CLAIMED_TV.get(letter) == role else 0.0
-                engine.add(f"(stmt {role} {el} {w} (stv {f} 0.9))")
-    rows = _elements_out(song, _resolve(engine), {})
+                if CLAIMED_TV.get(letter) == role:
+                    engine.add(f"(stmt {role} {el} {w} (stv 1.0 0.9)) (stmt-band {role} {el} {w} settled)")
+    rows = _elements_out(song, _resolve(engine, song), {})
     for row in rows:
         row["claimed"] = {w: claim["roles"][row["element"]][w] for w in song["writers"]}
     body = dict(kind="draft", song=song["id"], pack=pack, author=owner, claim=claim["id"],
@@ -95,7 +95,8 @@ def reconcile(song: dict, records: list[dict], pack: str, contests: tuple[dict, 
     by_id = {it["id"]: it for it in index}
 
     derived: dict[tuple, list[dict]] = defaultdict(list)
-    for res in engine.run("!(derive-all)"):
+    engine.run("!(collapse (index-records))")
+    for res in (r for it in index for r in engine.run(f"!(derive {it['id']})")):
         _, eid, kind, (role, el, w), pol, rid, rtv, tv = parse(res)
         it = by_id[eid]
         derived[(role, el, w)].append(dict(
@@ -112,7 +113,7 @@ def reconcile(song: dict, records: list[dict], pack: str, contests: tuple[dict, 
             acc = stv(parse(out[0]))
             steps.append(_tv(acc))
         band = engine.run(f"!(band {_fmt(acc)})")[0]
-        engine.add(f"(stmt {role} {el} {w} {_fmt(acc)})")
+        engine.add(f"(stmt {role} {el} {w} {_fmt(acc)}) (stmt-band {role} {el} {w} {band})")
         for e in evs:
             e["tv"] = _tv(e["tv"])
             e.pop("at")
@@ -124,7 +125,7 @@ def reconcile(song: dict, records: list[dict], pack: str, contests: tuple[dict, 
               writer=it["writer"], pol=it["pol"], kind=it["kind"])
          for it in index if it["record"] in withdrawn),
         key=lambda d: d["id"])
-    rows = _elements_out(song, _resolve(engine), statements)
+    rows = _elements_out(song, _resolve(engine, song), statements)
     body = dict(
         kind="reconciliation", song=song["id"], pack=pack, omega=OMEGA_RELEASE,
         lib_nal_sha256=lib_nal_sha(), elements=rows, totals=_totals(rows, song["writers"]),
