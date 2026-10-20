@@ -256,17 +256,17 @@ export default function Home() {
         {/* AI music */}
         <section
           id="ai"
-          className="w-full scroll-mt-20 px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
+          className="w-full scroll-mt-20 bg-nairobi text-white px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
         >
           <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
             <div>
-              <p className="eyebrow text-nairobi-ink">
+              <p className="text-[0.78rem] font-medium text-white/80">
                 Made for how music is made now
               </p>
               <h2 className="mt-4 text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
                 AI in the session. On the record.
               </h2>
-              <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+              <p className="mt-6 text-lg leading-relaxed text-white/85">
                 Producers generate drum loops. Singers lend their voice to a
                 model for a demo. Sawa keeps track of all of it, so the people
                 get the credit and the machine gets disclosed.
@@ -294,10 +294,10 @@ export default function Home() {
                 return (
                   <li
                     key={title as string}
-                    className="flex items-start gap-6 rounded-2xl border border-border bg-card p-7"
+                    className="flex items-start gap-6 rounded-2xl bg-ink p-7 text-white"
                   >
                     <I
-                      className="mt-0.5 size-9 shrink-0 text-foreground"
+                      className="mt-0.5 size-9 shrink-0 text-nairobi"
                       strokeWidth={1.4}
                       aria-hidden
                     />
@@ -305,7 +305,7 @@ export default function Home() {
                       <p className="text-lg font-medium tracking-[-0.02em]">
                         {title as string}
                       </p>
-                      <p className="mt-1.5 leading-relaxed text-muted-foreground">
+                      <p className="mt-1.5 leading-relaxed text-white/65">
                         {body as string}
                       </p>
                     </div>
