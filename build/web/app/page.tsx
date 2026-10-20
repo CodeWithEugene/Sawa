@@ -236,15 +236,15 @@ export default function Home() {
               {STEPS.map((s) => (
                 <li
                   key={s.n}
-                  className="rounded-2xl border border-border bg-background p-8"
+                  className="rounded-2xl bg-nairobi p-8 text-white"
                 >
-                  <span className="grid size-10 place-items-center rounded-full bg-ink text-sm font-medium text-white">
+                  <span className="grid size-10 place-items-center rounded-full bg-white text-sm font-medium text-nairobi-ink">
                     {s.n}
                   </span>
                   <h3 className="mt-8 text-2xl font-medium tracking-[-0.03em]">
                     {s.title}
                   </h3>
-                  <p className="mt-3 leading-relaxed text-muted-foreground">
+                  <p className="mt-3 leading-relaxed text-white/85">
                     {s.body}
                   </p>
                 </li>
