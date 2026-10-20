@@ -165,16 +165,16 @@ export default function Home() {
         {/* the problem */}
         <section
           id="artists"
-          className="w-full scroll-mt-20 px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
+          className="w-full scroll-mt-20 bg-nairobi text-white px-6 py-24 md:px-10 md:py-32 lg:px-16 2xl:px-24"
         >
           <div className="grid gap-14 lg:grid-cols-[1.1fr_1fr] lg:items-end">
             <div>
-              <p className="eyebrow text-nairobi-ink">The problem</p>
+              <p className="text-[0.78rem] font-medium text-white/80">The problem</p>
               <h2 className="mt-4 text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
                 When co-writers remember it differently, the money stops.
               </h2>
             </div>
-            <p className="text-lg leading-relaxed text-muted-foreground">
+            <p className="text-lg leading-relaxed text-white/85">
               A producer in Harlem and a singer in Nairobi make a song over
               WhatsApp. Weeks later, someone wants to license it, and each of
               them remembers a different split. Until they agree, collecting
@@ -182,7 +182,7 @@ export default function Home() {
               pay anyone.
             </p>
           </div>
-          <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+          <div className="mt-16 grid gap-4 sm:grid-cols-3">
             {[
               [
                 "$424M",
@@ -197,11 +197,11 @@ export default function Home() {
                 'what co-writers of Tyla\'s hit "Water" say they were offered for their work',
               ],
             ].map(([num, text]) => (
-              <div key={num} className="bg-card p-8">
+              <div key={num} className="rounded-2xl bg-ink p-8 text-white">
                 <p className="tabular text-4xl font-medium tracking-[-0.04em]">
                   {num}
                 </p>
-                <p className="mt-3 leading-relaxed text-muted-foreground">
+                <p className="mt-3 leading-relaxed text-white/65">
                   {text}
                 </p>
               </div>
@@ -372,23 +372,32 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section className="w-full bg-nairobi px-6 py-24 text-center text-white md:px-10 md:py-32 lg:px-16 2xl:px-24">
-          <h2 className="mx-auto max-w-3xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
-            Settle the split before it settles you.
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-white/85">
-            Follow Wanjiru and Malik as their agents work out who wrote
-            &ldquo;Amani Ni Sisi&rdquo;.
-          </p>
-          <Link
-            href={DEMO}
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "mt-9 h-13 rounded-xl bg-ink px-8 text-[1.02rem] font-normal text-white hover:bg-ink/85"
-            )}
-          >
-            Try The Demo
-          </Link>
+        <section className="w-full px-6 py-24 md:px-10 md:py-28 lg:px-16 2xl:px-24">
+          <div className="relative overflow-hidden rounded-3xl bg-nairobi px-8 py-16 text-center text-white md:px-16 md:py-24">
+            <svg
+              viewBox="0 0 480 300"
+              aria-hidden
+              className="pointer-events-none absolute -top-16 -right-20 w-[360px] opacity-20 md:w-[480px]"
+            >
+              <circle cx="180" cy="150" r="128" fill="none" stroke="white" strokeWidth="14" />
+              <circle cx="300" cy="150" r="128" fill="none" stroke="white" strokeWidth="14" />
+            </svg>
+            <h2 className="relative mx-auto max-w-3xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
+              Settle the split before it settles you.
+            </h2>
+            <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/85">
+              Follow Wanjiru and Malik as their agents work out who wrote &ldquo;Amani Ni Sisi&rdquo;.
+            </p>
+            <Link
+              href={DEMO}
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "relative mt-9 h-13 rounded-xl bg-ink px-8 text-[1.02rem] font-normal text-white hover:bg-ink/85"
+              )}
+            >
+              Try The Demo
+            </Link>
+          </div>
         </section>
       </main>
       <SiteFooter />
