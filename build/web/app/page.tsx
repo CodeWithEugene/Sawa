@@ -372,27 +372,27 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section className="w-full px-6 py-24 md:px-10 md:py-28 lg:px-16 2xl:px-24">
-          <div className="relative overflow-hidden rounded-3xl bg-nairobi px-8 py-16 text-center text-white md:px-16 md:py-24">
+        <section className="w-full bg-nairobi px-6 py-24 md:px-10 md:py-28 lg:px-16 2xl:px-24">
+          <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-16 text-center text-white md:px-16 md:py-24">
             <svg
               viewBox="0 0 480 300"
               aria-hidden
-              className="pointer-events-none absolute -top-16 -right-20 w-[360px] opacity-20 md:w-[480px]"
+              className="pointer-events-none absolute -top-16 -right-20 w-[360px] opacity-30 md:w-[480px]"
             >
-              <circle cx="180" cy="150" r="128" fill="none" stroke="white" strokeWidth="14" />
-              <circle cx="300" cy="150" r="128" fill="none" stroke="white" strokeWidth="14" />
+              <circle cx="180" cy="150" r="128" fill="none" stroke="var(--nairobi)" strokeWidth="14" />
+              <circle cx="300" cy="150" r="128" fill="none" stroke="var(--harlem)" strokeWidth="14" />
             </svg>
             <h2 className="relative mx-auto max-w-3xl text-[clamp(2.2rem,4.4vw,3.8rem)] leading-[1.05] font-medium tracking-[-0.04em]">
               Settle the split before it settles you.
             </h2>
-            <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/85">
+            <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/70">
               Follow Wanjiru and Malik as their agents work out who wrote &ldquo;Amani Ni Sisi&rdquo;.
             </p>
             <Link
               href={DEMO}
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "relative mt-9 h-13 rounded-xl bg-ink px-8 text-[1.02rem] font-normal text-white hover:bg-ink/85"
+                "relative mt-9 h-13 rounded-xl bg-nairobi px-8 text-[1.02rem] font-normal text-white hover:bg-nairobi/90"
               )}
             >
               Try The Demo
