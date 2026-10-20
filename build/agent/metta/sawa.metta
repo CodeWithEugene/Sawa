@@ -63,10 +63,22 @@
 ;; Returns (<rule-id> <role>).
 ;; ----------------------------------------------------------------
 
+;; D3 condition: an AI generator produced a version of $el before $t.
+(= (generated-before $el $t)
+   (exists (collapse
+     (match &self (ev $id ai-generation $a $tg $el $r $w $p)
+       (if (< $tg $t) yes (empty))))))
+
 (= (select artefact $by $t $el $role)
-   (if (and (== $role originated) (received-before $by $el $t))
-       (received-before-created developed)
-       (artefact $role)))
+   (if (and (== $role originated) (generated-before $el $t))
+       (generated-before-edited developed)
+       (if (and (== $role originated) (received-before $by $el $t))
+           (received-before-created developed)
+           (artefact $role))))
+
+;; An AI generator's export: evidence that the part was generated, never
+;; that a person wrote it.
+(= (select ai-generation $by $t $el $role) (ai-generation generated))
 
 (= (select recollection $by $t $el $role)
    (if (and (pack-has recollection-after-dispute) (after-dispute-with-record $t $el))
@@ -151,12 +163,19 @@
 ;; Share (percent of the element) for writer $w, given the element's
 ;; originators $os and developers $ds (plain recursion, no let*: it is
 ;; markedly faster on hyperon).
-(= (element-share $el $w $os $ds)
-   (share-by-count $w $os $ds (size-atom $os) (size-atom $ds)))
+;; AI-generated parts: no person originated them. A person who developed
+;; the generated material takes the development share; the rest is owned
+;; by no one and is disclosed.
+(= (ai-generated? $el) (settled? generated $el ai))
 
-(= (share-by-count $w $os $ds $no $nd)
+(= (element-share $el $w $os $ds)
+   (share-by-count $el $w $os $ds (size-atom $os) (size-atom $ds)))
+
+(= (share-by-count $el $w $os $ds $no $nd)
    (if (== $no 0)
-       blocked
+       (if (ai-generated? $el)
+           (if (is-member $w $ds) (/ (policy development) $nd) 0.0)
+           blocked)
        (if (is-member $w $os)
            (if (== $nd 0) (/ 100.0 $no) (/ (policy origination) $no))
            (if (is-member $w $ds) (/ (policy development) $nd) 0.0))))
@@ -188,3 +207,14 @@
 
 (= (clear-stmts)
    (collapse (match &self (stmt $r $e $w $tv) (remove-atom &self (stmt $r $e $w $tv)))))
+
+;; ----------------------------------------------------------------
+;; Consent: a voice model of a writer may only be used with that
+;; writer's recorded consent. Returns the writers whose voice was used
+;; without it; signing stays closed until the list is empty.
+;; ----------------------------------------------------------------
+
+(= (voice-without-consent)
+   (collapse
+     (match &self (voice-model $w $id)
+       (if (exists (collapse (match &self (consent voice $w $cid) yes))) (empty) $w))))

@@ -11,6 +11,8 @@
 (rule split-v0 other-party-statement (stv 1.0 0.78))
 (rule split-v0 recollection (stv 1.0 0.5))
 (rule split-v0 received-before-created (stv 1.0 0.9))
+(rule split-v0 ai-generation (stv 1.0 0.9))                 ; AI generator export: the part was generated
+(rule split-v0 generated-before-edited (stv 1.0 0.9))        ; D3: edited after an AI generated it: development
 
 (policy split-v0 origination 75.0)
 (policy split-v0 development 25.0)

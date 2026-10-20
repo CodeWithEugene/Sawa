@@ -19,6 +19,8 @@
 
 ;; defeaters
 (rule split-v1 received-before-created (stv 1.0 0.9))     ; D1: made after receiving the other's version: development
+(rule split-v1 ai-generation (stv 1.0 0.9))                 ; AI generator export: the part was generated
+(rule split-v1 generated-before-edited (stv 1.0 0.9))        ; D3: edited after an AI generated it: development
 (rule split-v1 recollection-after-dispute (stv 1.0 0.3))  ; D2: recollection after the dispute began
 
 ;; split policy (agreed in "Jua", 2025)

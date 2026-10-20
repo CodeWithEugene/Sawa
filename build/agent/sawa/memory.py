@@ -58,7 +58,10 @@ def evidence_items(record: dict, writers: list[str], elements: list[str]) -> lis
     """The evidence atoms a record contributes, before any reasoning."""
     rid, kind, author, at = record["id"], record["kind"], record["author"], record["at"]
     items: list[dict] = []
-    if kind in ("artefact", "co-edit"):
+    if kind == "ai-generation":
+        items.append(dict(id=rid, record=rid, kind=kind, author=author, at=at,
+                          element=record["element"], role="generated", writer="ai", pol="pos"))
+    elif kind in ("artefact", "co-edit"):
         items.append(dict(id=rid, record=rid, kind=kind, author=author, at=at,
                           element=record["element"], role="originated", writer=author, pol="pos"))
     elif kind == "message" and record.get("confirmed_by") == author:
@@ -97,6 +100,10 @@ def atoms(song: dict, records: list[dict], pack: str, withdrawn: set[str]) -> tu
     for r in records:
         if r["kind"] == "dispute":
             lines.append(f"(dispute-began {r['at']})")
+        if r["kind"] == "ai-voice":
+            lines.append(f"(voice-model {r['voice_of']} {r['id']})")
+        if r["kind"] == "consent":
+            lines.append(f"(consent {r['consent']} {r['author']} {r['id']})")
         att = r.get("attachment")
         if att:
             lines.append(f"(received {r['to']} {att['element']} {r['at']})")

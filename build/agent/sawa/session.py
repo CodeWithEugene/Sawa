@@ -57,6 +57,21 @@ def _memory_log(s: dict, agent: str, events: list[dict]) -> list[dict]:
     return log
 
 
+def ai_disclosure(s: dict) -> list[dict]:
+    """Every AI tool that touched the song, and for what."""
+    out = []
+    for r in s["records"]:
+        if r["kind"] == "ai-generation":
+            out.append(dict(record=r["id"], tool=r["tool"], element=r["element"], used_by=r["author"],
+                            use="generated", detail=r["prompt"]))
+        elif r["kind"] == "ai-voice":
+            consent = next((c["id"] for c in s["records"]
+                            if c["kind"] == "consent" and c["author"] == r["voice_of"]), None)
+            out.append(dict(record=r["id"], tool=r["tool"], element=None, used_by=r["author"],
+                            use="voice-model", voice_of=r["voice_of"], consent=consent, detail=r["detail"]))
+    return out
+
+
 def _record(s: dict, result: dict, signatures: dict) -> dict:
     body = dict(
         song=s["id"], title=s["title"],
@@ -66,6 +81,8 @@ def _record(s: dict, result: dict, signatures: dict) -> dict:
         pack=result["body"]["pack"], omega=OMEGA_RELEASE,
         proof_hash=result["hash"],
         stems=s["stems"],
+        ai_points=result["body"]["ai_points"],
+        ai_disclosure=ai_disclosure(s),
         writers={w: dict(name=WRITERS[w]["name"], city=WRITERS[w]["city"], role=WRITERS[w]["role"])
                  for w in s["writers"]},
         signatures={w: dict(name=sig["name"], at=sig["at"]) for w, sig in sorted(signatures.items())},
@@ -101,7 +118,9 @@ def run(song_id: str, events: list[dict]) -> dict:
     converged = st.reconciled and agents["harlem"]["hash"] == agents["nairobi"]["hash"]
     blocked = []
     if st.reconciled:
-        blocked = [r["element"] for r in agents["harlem"]["result"]["body"]["elements"] if r["blocked"]]
+        hb = agents["harlem"]["result"]["body"]
+        blocked = [r["element"] for r in hb["elements"] if r["blocked"]]
+        blocked += [f"voice-consent-{w}" for w in hb["voice_without_consent"]]
     can_sign = converged and not blocked
     signatures = st.signatures if can_sign else {}
     record = None
@@ -116,7 +135,7 @@ def run(song_id: str, events: list[dict]) -> dict:
         song_id=song_id, phase=phase, converged=converged, can_sign=can_sign,
         blocked=blocked, disputed=_disputed(drafts), agents=agents,
         signatures={w: dict(name=v["name"], at=v["at"]) for w, v in signatures.items()},
-        record=record, explanation=explanation,
+        record=record, explanation=explanation, ai_disclosure=ai_disclosure(s),
         headline={lang: explain.headline(converged, phase, lang) for lang in ("en", "sw")},
         contests=[dict(record=c["record"], by=c["by"], reason=c["reason"]) for c in st.contests],
         engine=dict(omega=OMEGA_RELEASE, hyperon=HYPERON_VERSION),

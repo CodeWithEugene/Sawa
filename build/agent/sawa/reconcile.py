@@ -54,16 +54,31 @@ def _elements_out(song: dict, resolved: dict[str, dict], statements: dict) -> li
     for el, weight, right, *_ in song["elements"]:
         r = resolved[el]
         contrib = {w: (None if s is None else _r(weight * s / 100.0)) for w, s in r["shares"].items()}
+        human = sum(v for v in contrib.values() if v is not None)
+        ai_points = _r(weight - human) if not r["blocked"] and not r["originators"] else 0.0
         rows.append(dict(element=el, right=right, weight=weight, originators=r["originators"],
                          developers=r["developers"], shares=r["shares"], contributions=contrib,
-                         blocked=r["blocked"], statements=statements.get(el, [])))
+                         blocked=r["blocked"], ai_generated=ai_points > 0, ai_points=ai_points,
+                         statements=statements.get(el, [])))
     return rows
 
 
 def _totals(rows: list[dict], writers: list[str]) -> dict[str, float | None]:
+    """Each writer's share of the human-authored composition.
+
+    AI-generated material is owned by no one, so it is left out and the
+    writers' contributions are scaled to 100. The excluded points are
+    reported separately (``ai_points``) and disclosed on the record.
+    """
     if any(r["blocked"] for r in rows):
         return {w: None for w in writers}
-    return {w: _r(sum(r["contributions"][w] for r in rows)) for w in writers}
+    raw = {w: sum(r["contributions"][w] for r in rows) for w in writers}
+    human = sum(raw.values())
+    return {w: _r(round(100.0 * v / human, 1)) for w, v in raw.items()}
+
+
+def _ai_points(rows: list[dict]) -> float:
+    return _r(sum(r.get("ai_points", 0.0) for r in rows))
 
 
 def draft(song: dict, owner: str, pack: str) -> dict:
@@ -129,6 +144,8 @@ def reconcile(song: dict, records: list[dict], pack: str, contests: tuple[dict, 
     body = dict(
         kind="reconciliation", song=song["id"], pack=pack, omega=OMEGA_RELEASE,
         lib_nal_sha256=lib_nal_sha(), elements=rows, totals=_totals(rows, song["writers"]),
+        ai_points=_ai_points(rows),
+        voice_without_consent=sorted(parse(engine.run("!(voice-without-consent)")[0])),
         withdrawn=withdrawn_items,
         contests=[dict(record=c["record"], by=c["by"], reason=c["reason"]) for c in contests])
     return dict(body=body, hash=proof_hash(body))

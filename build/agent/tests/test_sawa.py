@@ -97,7 +97,8 @@ def test_drafts_reproduce_each_writers_account() -> None:
 
 
 def test_reconciled_split_and_element_resolution(harlem: dict) -> None:
-    assert harlem["body"]["totals"] == {"wanjiru": 50.0, "malik": 50.0}
+    assert harlem["body"]["totals"] == {"wanjiru": 53.2, "malik": 46.8}
+    assert harlem["body"]["ai_points"] == 6.0
     hook = element(harlem, "hook-melody")
     assert hook["originators"] == ["wanjiru"] and hook["developers"] == ["malik"]
     assert hook["shares"] == {"wanjiru": 75.0, "malik": 25.0}
@@ -106,9 +107,33 @@ def test_reconciled_split_and_element_resolution(harlem: dict) -> None:
     assert chorus["shares"] == {"wanjiru": 50.0, "malik": 50.0}
 
 
-def test_shares_sum_to_100_per_element(harlem: dict) -> None:
+def test_shares_sum_to_100_per_human_element(harlem: dict) -> None:
     for row in harlem["body"]["elements"]:
-        assert sum(row["shares"].values()) == pytest.approx(100.0)
+        if not row["ai_generated"]:
+            assert sum(row["shares"].values()) == pytest.approx(100.0)
+
+
+def test_ai_generated_drums_are_owned_by_no_one(harlem: dict) -> None:
+    drums = element(harlem, "drum-groove")
+    assert drums["ai_generated"] and drums["originators"] == [] and drums["developers"] == ["malik"]
+    assert drums["shares"] == {"wanjiru": 0.0, "malik": 25.0} and drums["ai_points"] == 6.0
+    gen = statement(drums, "generated", "ai")
+    assert gen["band"] == "settled" and gen["evidence"][0]["rule"] == "ai-generation"
+    dev = statement(drums, "developed", "malik")
+    assert dev["evidence"][0]["rule"] == "generated-before-edited"
+
+
+def test_voice_model_without_consent_blocks_signing(monkeypatch: pytest.MonkeyPatch) -> None:
+    import copy
+    from sawa import seed
+    original = seed.SONGS["amani-ni-sisi"]
+    patched = copy.deepcopy(original)
+    patched["records"] = [r for r in patched["records"] if r["kind"] != "consent"]
+    patched["id"] = "amani-no-consent"
+    monkeypatch.setitem(seed.SONGS, "amani-no-consent", patched)
+    out = session.run("amani-no-consent", events(*FULL))
+    assert out["converged"] is True and out["can_sign"] is False
+    assert "voice-consent-wanjiru" in out["blocked"]
 
 
 # ---------------------------------------------------------------- convergence
@@ -144,7 +169,7 @@ def test_contest_is_recorded_and_hook_still_holds() -> None:
     out = session.run(SONG, [*events(*FULL), contest])
     res = out["agents"]["harlem"]["result"]
     assert out["converged"] is True
-    assert res["body"]["totals"] == {"wanjiru": 50.0, "malik": 50.0}
+    assert res["body"]["totals"] == {"wanjiru": 53.2, "malik": 46.8}
     orig = statement(element(res, "hook-melody"), "originated", "wanjiru")
     assert orig["tv"] == [0.9261, 0.8334] and orig["band"] == "settled"
     assert any(w["record"] == "msg-fire" for w in res["body"]["withdrawn"])

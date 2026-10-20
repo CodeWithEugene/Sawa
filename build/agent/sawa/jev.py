@@ -50,7 +50,7 @@ async def read(record: dict, previous: dict | None = None) -> dict:
                 "context": (
                     f"`message` is a chat message from {sender} to {receiver}, two co-writers of a song. "
                     "It may be in English, Swahili or Sheng. The song's parts are: hook melody, verse melody, "
-                    "harmony and groove, chorus lyrics, verse 1 lyrics, verse 2 lyrics."
+                    "chords and bass, drum groove, chorus lyrics, verse 1 lyrics, verse 2 lyrics."
                 ),
                 "question": (
                     "Which credit for writing a part of the song does `message` give, if any? "
