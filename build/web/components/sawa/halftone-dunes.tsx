@@ -4,171 +4,215 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Layered ridges, back to front: base height (0..1 of the canvas), sine
-// amplitudes, spatial frequencies (cycles per 1000px), phases, and the
-// darkness at the crest and deep below it.
-const LAYERS = [
-  { base: 0.3, amps: [0.06, 0.025], freqs: [1.1, 2.9], phases: [0.4, 1.7], d0: 0.06, d1: 0.34 },
-  { base: 0.43, amps: [0.05, 0.028], freqs: [1.5, 3.6], phases: [2.0, 0.3], d0: 0.16, d1: 0.55 },
-  { base: 0.57, amps: [0.055, 0.022], freqs: [0.9, 3.1], phases: [3.3, 1.1], d0: 0.3, d1: 0.8 },
-  { base: 0.74, amps: [0.04, 0.022], freqs: [1.2, 4.2], phases: [0.9, 2.4], d0: 0.55, d1: 1.0 },
-]
+// Halftone hills drawn on the GPU. Every pixel finds its dot on a staggered
+// grid, works out how dark the landscape is there, and draws an
+// anti-aliased dot. The hills breathe gently in place; dots near the cursor
+// warm to orange and cool off as it moves on.
 
-const CELL = 5 // px between dots
-const SPEED = 22 // px per second, drifting right
-const HOVER_R = 120 // px, hover influence radius
+const TRAIL = 24 // remembered cursor points
+const TRAIL_MS = 900 // how long a dot stays warm
 
-function hash(x: number, y: number): number {
-  let h = (x * 374761393 + y * 668265263) | 0
-  h = Math.imul(h ^ (h >>> 13), 1274126177)
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967295
+const VERT = `
+attribute vec2 a;
+void main() { gl_Position = vec4(a, 0.0, 1.0); }
+`
+
+const FRAG = `
+precision highp float;
+uniform vec2 uRes;
+uniform float uDpr;
+uniform float uTime;
+uniform vec3 uTrail[${TRAIL}];
+uniform vec3 uPaper;
+uniform vec3 uInk;
+uniform vec3 uHot;
+
+const float CELL = 5.0;
+const float HOVER_R = 56.0;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-function ridgeY(layer: (typeof LAYERS)[number], x: number, height: number, t: number): number {
-  let y = layer.base
-  for (let i = 0; i < layer.amps.length; i++) {
-    const f = (layer.freqs[i] / 1000) * 2 * Math.PI
-    // a gentle swell on top of the drift, so it reads as a wave
-    const swell = 1 + 0.12 * Math.sin(t * 0.35 + i * 1.7 + layer.phases[i])
-    y += layer.amps[i] * swell * Math.sin(f * x + layer.phases[i])
+float wave(float x, float amp, float freq, float ph, float i, float li) {
+  float f = freq / 1000.0 * 6.2831853;
+  float breathe = 1.0 + 0.18 * sin(uTime * 0.5 + i * 2.1 + ph + li);
+  return amp * breathe * sin(f * x + ph);
+}
+
+float ridge(float li, float x, float H) {
+  float y;
+  if (li < 0.5) {
+    y = 0.30 + wave(x, 0.060, 1.1, 0.4, 0.0, li) + wave(x, 0.025, 2.9, 1.7, 1.0, li);
+  } else if (li < 1.5) {
+    y = 0.43 + wave(x, 0.050, 1.5, 2.0, 0.0, li) + wave(x, 0.028, 3.6, 0.3, 1.0, li);
+  } else if (li < 2.5) {
+    y = 0.57 + wave(x, 0.055, 0.9, 3.3, 0.0, li) + wave(x, 0.022, 3.1, 1.1, 1.0, li);
+  } else {
+    y = 0.74 + wave(x, 0.040, 1.2, 0.9, 0.0, li) + wave(x, 0.022, 4.2, 2.4, 1.0, li);
   }
-  return y * height
+  y += 0.006 * sin(uTime * 0.45 + li * 1.3);
+  return y * H;
+}
+
+float darkness(vec2 p, float H) {
+  float d = 0.0;
+  for (int l = 0; l < 4; l++) {
+    float li = float(l);
+    float d0 = li < 0.5 ? 0.06 : li < 1.5 ? 0.16 : li < 2.5 ? 0.30 : 0.55;
+    float d1 = li < 0.5 ? 0.34 : li < 1.5 ? 0.55 : li < 2.5 ? 0.80 : 1.00;
+    float top = ridge(li, p.x, H);
+    float w = smoothstep(top - 5.0, top + 5.0, p.y);
+    float depth = pow(clamp((p.y - top) / (0.26 * H), 0.0, 1.0), 0.8);
+    float v = mix(d0, d1, depth);
+    d = mix(d, max(d * 0.2, v), w);
+  }
+  float bottom = clamp((p.y / H - 0.86) / 0.14, 0.0, 1.0);
+  return max(d, bottom);
+}
+
+void main() {
+  vec2 res = uRes / uDpr;
+  float H = res.y;
+  vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uDpr;
+
+  // nearest dot on a staggered grid
+  float r = floor(p.y / CELL + 0.5);
+  float stagger = mod(r, 2.0) * CELL * 0.5;
+  float c = floor((p.x - stagger) / CELL + 0.5);
+  vec2 center = vec2(c * CELL + stagger, r * CELL);
+
+  float d = darkness(center, H);
+  d = clamp(d + (hash(vec2(c, r)) - 0.5) * 0.08, 0.0, 1.0);
+
+  float heat = 0.0;
+  for (int i = 0; i < ${TRAIL}; i++) {
+    vec3 t = uTrail[i];
+    if (t.z < 1.0) {
+      float k = 1.0 - smoothstep(0.0, HOVER_R, distance(center, t.xy));
+      heat = max(heat, k * (1.0 - t.z) * (1.0 - t.z));
+    }
+  }
+
+  float base = CELL * 0.5 * sqrt(max(d, 0.0));
+  float rad = base + (max(base, CELL * 0.4) - base) * heat;
+  float aa = 0.75;
+  float dotA = 1.0 - smoothstep(rad - aa, rad + aa, distance(p, center));
+  if (rad < 0.12) dotA = 0.0;
+
+  float top0 = ridge(0.0, p.x, H);
+  float bgA = smoothstep(top0 - 1.0, top0 + 1.0, p.y);
+
+  vec3 dotC = mix(uInk, uHot, smoothstep(0.05, 0.9, heat));
+  vec3 col = dotC * dotA + uPaper * bgA * (1.0 - dotA);
+  float alpha = dotA + bgA * (1.0 - dotA);
+  gl_FragColor = vec4(col, alpha);
+}
+`
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "")
+  const n = parseInt(h.length === 3 ? h.split("").map((x) => x + x).join("") : h, 16)
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
+}
+
+function compile(gl: WebGLRenderingContext, type: number, src: string): WebGLShader | null {
+  const sh = gl.createShader(type)
+  if (!sh) return null
+  gl.shaderSource(sh, src)
+  gl.compileShader(sh)
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    gl.deleteShader(sh)
+    return null
+  }
+  return sh
 }
 
 export function HalftoneDunes({ className }: { className?: string }) {
   const ref = React.useRef<HTMLCanvasElement>(null)
-  const mouse = React.useRef({ x: -9999, y: -9999, tx: -9999, ty: -9999, k: 0, tk: 0 })
+  const trail = React.useRef<{ x: number; y: number; t: number }[]>([])
+  const [fallback, setFallback] = React.useState(false)
 
   React.useEffect(() => {
     const canvas = ref.current
     if (!canvas) return
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    const gl = canvas.getContext("webgl", { premultipliedAlpha: true, antialias: false })
+    const vs = gl && compile(gl, gl.VERTEX_SHADER, VERT)
+    const fs = gl && compile(gl, gl.FRAGMENT_SHADER, FRAG)
+    const prog = gl && vs && fs ? gl.createProgram() : null
+    if (!gl || !vs || !fs || !prog) {
+      requestAnimationFrame(() => setFallback(true))
+      return
+    }
+    gl.attachShader(prog, vs)
+    gl.attachShader(prog, fs)
+    gl.linkProgram(prog)
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      requestAnimationFrame(() => setFallback(true))
+      return
+    }
+    gl.useProgram(prog)
 
+    const buf = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW)
+    const loc = gl.getAttribLocation(prog, "a")
+    gl.enableVertexAttribArray(loc)
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
+
+    const uRes = gl.getUniformLocation(prog, "uRes")
+    const uDpr = gl.getUniformLocation(prog, "uDpr")
+    const uTime = gl.getUniformLocation(prog, "uTime")
+    const uTrail = gl.getUniformLocation(prog, "uTrail")
     const styles = getComputedStyle(document.documentElement)
-    const paper = styles.getPropertyValue("--paper").trim() || "#f4f4f2"
-    const ink = "#131315"
-    const accent = "#f07a2b"
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    gl.uniform3fv(gl.getUniformLocation(prog, "uPaper"), hexToRgb(styles.getPropertyValue("--paper").trim() || "#f4f4f2"))
+    gl.uniform3fv(gl.getUniformLocation(prog, "uInk"), hexToRgb("#131315"))
+    gl.uniform3fv(gl.getUniformLocation(prog, "uHot"), hexToRgb("#f07a2b"))
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
-    let width = 0
-    let height = 0
-    let dpr = 1
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const start = performance.now()
+    const trailData = new Float32Array(TRAIL * 3)
     let raf = 0
     let visible = true
-    const start = performance.now()
 
     function resize() {
-      if (!canvas || !ctx) return
+      if (!canvas || !gl) return
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
       const rect = canvas.getBoundingClientRect()
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
-      width = rect.width
-      height = rect.height
-      canvas.width = Math.round(width * dpr)
-      canvas.height = Math.round(height * dpr)
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      canvas.width = Math.max(1, Math.round(rect.width * dpr))
+      canvas.height = Math.max(1, Math.round(rect.height * dpr))
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.uniform2f(uRes, canvas.width, canvas.height)
+      gl.uniform1f(uDpr, dpr)
     }
 
-    function draw(now: number) {
-      if (!ctx) return
-      const t = reduce ? 0 : (now - start) / 1000
-      const offset = t * SPEED // terrain moves right
-      const m = mouse.current
-      m.x += (m.tx - m.x) * 0.18
-      m.y += (m.ty - m.y) * 0.18
-      m.k += (m.tk - m.k) * 0.08
-
-      ctx.clearRect(0, 0, width, height)
-      const cols = Math.ceil(width / CELL) + 2
-      const rows = Math.ceil(height / CELL) + 1
-
-      // ridge heights for this frame
-      const ridges = LAYERS.map((layer) => {
-        const arr = new Float32Array(cols)
-        for (let c = 0; c < cols; c++) arr[c] = ridgeY(layer, c * CELL - offset, height, t)
-        return arr
-      })
-
-      // solid canvas below the first ridge hides whatever sits behind the hills
-      ctx.fillStyle = paper
-      ctx.beginPath()
-      ctx.moveTo(0, height)
-      for (let c = 0; c < cols; c++) ctx.lineTo(c * CELL, ridges[0][c])
-      ctx.lineTo(width, height)
-      ctx.closePath()
-      ctx.fill()
-
-      const inkPath = new Path2D()
-      const hotPath = new Path2D()
-      const shift = offset / CELL
-      const shiftCol = Math.floor(shift)
-      const frac = (shift - shiftCol) * CELL
-
-      for (let r = 0; r < rows; r++) {
-        const y = r * CELL
-        const stagger = r % 2 ? CELL / 2 : 0
-        for (let c = -1; c < cols; c++) {
-          const x = c * CELL + stagger + frac
-          const ci = Math.min(cols - 1, Math.max(0, c))
-          let d = 0
-          for (let l = 0; l < LAYERS.length; l++) {
-            const top = ridges[l][ci]
-            if (y >= top) {
-              const depth = Math.pow(Math.min(1, (y - top) / (0.26 * height)), 0.8)
-              const v = LAYERS[l].d0 + (LAYERS[l].d1 - LAYERS[l].d0) * depth
-              d = Math.max(d * 0.2, v)
-            }
-          }
-          const bottom = Math.min(1, Math.max(0, (y / height - 0.86) / 0.14))
-          d = Math.max(d, bottom)
-          if (d < 0.04) continue
-          // grain that travels with the terrain
-          d = Math.min(1, Math.max(0, d + (hash(c - shiftCol, r) - 0.5) * 0.08))
-
-          let px = x
-          let py = y
-          let rad = CELL * 0.56 * Math.sqrt(d)
-          let hot = false
-          if (m.k > 0.01) {
-            const dx = x - m.x
-            const dy = y - m.y
-            const dist = Math.hypot(dx, dy)
-            if (dist < HOVER_R) {
-              // sound-wave ripples expanding from the cursor
-              const q = dist / HOVER_R
-              const p1 = (t * 0.75) % 1
-              const p2 = (p1 + 0.5) % 1
-              const ring = (p: number) => Math.exp(-((q - p) ** 2) / 0.006)
-              const wave = Math.max(ring(p1), ring(p2)) * (1 - q * 0.7) * m.k
-              px += (dx / (dist || 1)) * wave * 5
-              py += (dy / (dist || 1)) * wave * 5
-              rad = Math.min(CELL * 0.62, rad * (1 + wave * 0.7) + wave * 0.6)
-              hot = wave > 0.45
-            }
-          }
-          const path = hot ? hotPath : inkPath
-          path.moveTo(px + rad, py)
-          path.arc(px, py, rad, 0, Math.PI * 2)
-        }
+    function frame(now: number) {
+      if (!gl) return
+      const pts = trail.current
+      while (pts.length && now - pts[0].t > TRAIL_MS) pts.shift()
+      for (let i = 0; i < TRAIL; i++) {
+        const pt = pts[pts.length - 1 - i]
+        trailData[i * 3] = pt ? pt.x : -9999
+        trailData[i * 3 + 1] = pt ? pt.y : -9999
+        trailData[i * 3 + 2] = pt ? (now - pt.t) / TRAIL_MS : 2
       }
-      ctx.fillStyle = ink
-      ctx.fill(inkPath)
-      ctx.fillStyle = accent
-      ctx.fill(hotPath)
-
-      if (!reduce && visible) raf = requestAnimationFrame(draw)
+      gl.uniform3fv(uTrail, trailData)
+      gl.uniform1f(uTime, reduce ? 0 : (now - start) / 1000)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.drawArrays(gl.TRIANGLES, 0, 6)
+      if (visible) raf = requestAnimationFrame(frame)
     }
 
     resize()
-    const ro = new ResizeObserver(() => {
-      resize()
-      if (reduce) draw(performance.now())
-    })
+    const ro = new ResizeObserver(resize)
     ro.observe(canvas)
     const io = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting
       cancelAnimationFrame(raf)
-      if (visible || reduce) raf = requestAnimationFrame(draw)
+      if (visible) raf = requestAnimationFrame(frame)
     })
     io.observe(canvas)
 
@@ -181,27 +225,32 @@ export function HalftoneDunes({ className }: { className?: string }) {
 
   function onMove(e: React.PointerEvent<HTMLCanvasElement>) {
     const rect = e.currentTarget.getBoundingClientRect()
-    const m = mouse.current
-    m.tx = e.clientX - rect.left
-    m.ty = e.clientY - rect.top
-    if (m.tk === 0) {
-      m.x = m.tx
-      m.y = m.ty
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const now = performance.now()
+    const pts = trail.current
+    const last = pts[pts.length - 1]
+    // fill gaps when the cursor moves fast, so the trail stays continuous
+    if (last) {
+      const dist = Math.hypot(x - last.x, y - last.y)
+      const steps = Math.min(6, Math.floor(dist / 18))
+      for (let s = 1; s <= steps; s++) {
+        const f = s / (steps + 1)
+        pts.push({ x: last.x + (x - last.x) * f, y: last.y + (y - last.y) * f, t: now })
+      }
     }
-    m.tk = 1
+    pts.push({ x, y, t: now })
+    if (pts.length > TRAIL) pts.splice(0, pts.length - TRAIL)
   }
 
-  function onLeave() {
-    mouse.current.tk = 0
+  if (fallback) {
+    return (
+      <div
+        aria-hidden
+        className={cn("bg-[url('/hero-dunes.png')] bg-[length:100%_100%] bg-bottom", className)}
+      />
+    )
   }
 
-  return (
-    <canvas
-      ref={ref}
-      aria-hidden
-      onPointerMove={onMove}
-      onPointerLeave={onLeave}
-      className={cn("block size-full", className)}
-    />
-  )
+  return <canvas ref={ref} aria-hidden onPointerMove={onMove} className={cn("block size-full", className)} />
 }
